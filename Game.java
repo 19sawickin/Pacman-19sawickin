@@ -23,6 +23,7 @@ public class Game {
         _pacman = null;
         this.setupBoard(gamePane, map);
         this.generateMap(map, gamePane);
+        this.setupTimeline();
     }
 
     public void setupBoard(Pane gamePane, SquareType[][] map) {
@@ -74,6 +75,7 @@ public class Game {
     private class TimeHandler implements EventHandler<ActionEvent> {
 
         public void handle(ActionEvent kf) {
+            _pacman.move(-5,0);
 
         }
     }
@@ -83,5 +85,6 @@ public class Game {
         public void handle(KeyEvent e) {
 
         }
+
     }
 }
