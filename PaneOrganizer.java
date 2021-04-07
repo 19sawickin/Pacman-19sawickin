@@ -1,6 +1,6 @@
 package pacman;
 
-import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.*;
 
 public class PaneOrganizer {
 
@@ -8,7 +8,9 @@ public class PaneOrganizer {
 
     public PaneOrganizer() {
         _root = new BorderPane();
-        new Game();
+        Pane gamePane = new Pane();
+        _root.setCenter(gamePane);
+        new Game(gamePane);
     }
 
     public BorderPane getRoot() {
