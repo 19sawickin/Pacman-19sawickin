@@ -24,6 +24,7 @@ public class Game {
         this.setupBoard(gamePane, map);
         this.generateMap(map, gamePane);
         gamePane.addEventHandler(KeyEvent.KEY_PRESSED, new KeyHandler());
+        gamePane.setFocusTraversable(true);
         this.setupTimeline();
     }
 
@@ -96,11 +97,10 @@ public class Game {
                 case DOWN:
                     _pacman.move(Direction.DOWN);
                     break;
+                default:
+                    break;
             }
+            e.consume();
         }
-    }
-
-    public enum Direction {
-        LEFT, RIGHT, UP, DOWN
     }
 }
