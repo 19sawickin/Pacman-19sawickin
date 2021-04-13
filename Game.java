@@ -23,6 +23,7 @@ public class Game {
         _pacman = null;
         this.setupBoard(gamePane, map);
         this.generateMap(map, gamePane);
+        gamePane.addEventHandler(KeyEvent.KEY_PRESSED, new KeyHandler());
         this.setupTimeline();
     }
 
@@ -75,7 +76,6 @@ public class Game {
     private class TimeHandler implements EventHandler<ActionEvent> {
 
         public void handle(ActionEvent kf) {
-            _pacman.move(-5,0);
 
         }
     }
@@ -83,8 +83,24 @@ public class Game {
     private class KeyHandler implements EventHandler<KeyEvent> {
 
         public void handle(KeyEvent e) {
-
+            switch(e.getCode()) {
+                case LEFT:
+                    _pacman.move(Direction.LEFT);
+                    break;
+                case RIGHT:
+                    _pacman.move(Direction.RIGHT);
+                    break;
+                case UP:
+                    _pacman.move(Direction.UP);
+                    break;
+                case DOWN:
+                    _pacman.move(Direction.DOWN);
+                    break;
+            }
         }
+    }
 
+    public enum Direction {
+        LEFT, RIGHT, UP, DOWN
     }
 }

@@ -16,9 +16,26 @@ public class Pacman {
         gamePane.getChildren().add(_pacman);
     }
 
-    public void move(int xTranslate, int yTranslate) {
-        _pacman.setCenterX(_pacman.getCenterX() + xTranslate);
-
+//    public void move(int xTranslate, int yTranslate) {
+//        _pacman.setCenterX(_pacman.getCenterX() + xTranslate);
+//
+//    }
+    public void move(Game.Direction direction) {
+        switch(direction) {
+            case LEFT:
+                _pacman.setCenterX(_pacman.getCenterX() + -10);
+                break;
+            case RIGHT:
+                _pacman.setCenterX(_pacman.getCenterX() + 10);
+                break;
+            case UP:
+                _pacman.setCenterY(_pacman.getCenterY() + -10);
+                break;
+            case DOWN:
+                _pacman.setCenterY(_pacman.getCenterY() + 10);
+                break;
+            default:
+                break;
+        }
     }
-
 }
