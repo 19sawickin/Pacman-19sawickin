@@ -24,7 +24,7 @@ public class Game {
         SquareType map[][] = cs15.fnl.pacmanSupport.SupportMap.getSupportMap();
         _map = new MazeSquare[Constants.ROWS][Constants.COLUMNS];
         _pacman = null;
-        _futureX = 0;
+        _futureX = -1;
         _futureY = 0;
         _direction = Direction.LEFT;
         this.setupBoard(gamePane, map);
@@ -85,7 +85,7 @@ public class Game {
     private class TimeHandler implements EventHandler<ActionEvent> {
 
         public void handle(ActionEvent kf) {
-            while(Game.checkValidity()) {
+            while(checkValidity()) {
                 _pacman.move(_direction);
             }
         }
@@ -96,24 +96,32 @@ public class Game {
         public void handle(KeyEvent e) {
             switch(e.getCode()) {
                 case LEFT:
-                    _direction = Direction.LEFT;
-                    _futureX = -1;
-                    _futureY = 0;
+                    if(checkValidity()) {
+                        _direction = Direction.LEFT;
+                        _futureX = -1;
+                        _futureY = 0;
+                    }
                     break;
                 case RIGHT:
-                    _direction = Direction.RIGHT;
-                    _futureX = 1;
-                    _futureY = 0;
+                    if(checkValidity()) {
+                        _direction = Direction.RIGHT;
+                        _futureX = 1;
+                        _futureY = 0;
+                    }
                     break;
                 case UP:
-                    _direction = Direction.UP;
-                    _futureX = 0;
-                    _futureY = -1;
+                    if(checkValidity()) {
+                        _direction = Direction.UP;
+                        _futureX = 0;
+                        _futureY = -1;
+                    }
                     break;
                 case DOWN:
-                    _direction = Direction.DOWN;
-                    _futureX = 0;
-                    _futureY = 1;
+                    if(checkValidity()) {
+                        _direction = Direction.DOWN;
+                        _futureX = 0;
+                        _futureY = 1;
+                    }
                     break;
                 default:
                     break;
