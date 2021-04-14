@@ -16,6 +16,14 @@ public class Pacman {
         gamePane.getChildren().add(_pacman);
     }
 
+    public int getX() {
+        return (int)(_pacman.getCenterX() - Constants.OFFSET)/Constants.SQUARE_WIDTH;
+    }
+
+    public int getY() {
+        return (int)(_pacman.getCenterY() - Constants.OFFSET)/Constants.SQUARE_WIDTH;
+    }
+
     public void move(Direction direction) {
         switch(direction) {
             case LEFT:

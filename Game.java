@@ -14,16 +14,18 @@ import javafx.scene.input.KeyEvent;
 public class Game {
 
     private MazeSquare[][] _map;
-    private MazeSquare _mazeSquare;
     private Timeline _timeline;
     private Pacman _pacman;
     private Direction _direction;
+    private int _futureX;
+    private int _futureY;
 
     public Game(Pane gamePane) {
         SquareType map[][] = cs15.fnl.pacmanSupport.SupportMap.getSupportMap();
         _map = new MazeSquare[Constants.ROWS][Constants.COLUMNS];
         _pacman = null;
-        _mazeSquare = null;
+        _futureX = 0;
+        _futureY = 0;
         _direction = Direction.LEFT;
         this.setupBoard(gamePane, map);
         this.generateMap(map, gamePane);
@@ -36,14 +38,13 @@ public class Game {
         for(int i=0; i<Constants.ROWS; i++) {
             for(int j=0; j<Constants.COLUMNS; j++) {
                 if(map[i][j]==SquareType.WALL) {
-                    _mazeSquare = new MazeSquare(gamePane, Color.DARKBLUE, i, j);
-                    _mazeSquare.setIsAWall(true);
+                    _map[i][j] = new MazeSquare(gamePane, Color.DARKBLUE, i, j);
+                    _map[i][j].setIsAWall(true);
                 }
                 else {
-                    _mazeSquare = new MazeSquare(gamePane, Color.BLACK, i, j);
-                    _mazeSquare.setIsAWall(false);
+                    _map[i][j] = new MazeSquare(gamePane, Color.BLACK, i, j);
+                    _map[i][j].setIsAWall(false);
                 }
-                _map[i][j] = _mazeSquare;
             }
         }
     }
@@ -84,7 +85,9 @@ public class Game {
     private class TimeHandler implements EventHandler<ActionEvent> {
 
         public void handle(ActionEvent kf) {
-            _pacman.move(_direction);
+            while(Game.checkValidity()) {
+                _pacman.move(_direction);
+            }
         }
     }
 
@@ -94,24 +97,36 @@ public class Game {
             switch(e.getCode()) {
                 case LEFT:
                     _direction = Direction.LEFT;
-                    //_pacman.move(Direction.LEFT);
+                    _futureX = -1;
+                    _futureY = 0;
                     break;
                 case RIGHT:
                     _direction = Direction.RIGHT;
-                    //_pacman.move(Direction.RIGHT);
+                    _futureX = 1;
+                    _futureY = 0;
                     break;
                 case UP:
                     _direction = Direction.UP;
-                    //_pacman.move(Direction.UP);
+                    _futureX = 0;
+                    _futureY = -1;
                     break;
                 case DOWN:
                     _direction = Direction.DOWN;
-                    //_pacman.move(Direction.DOWN);
+                    _futureX = 0;
+                    _futureY = 1;
                     break;
                 default:
                     break;
             }
             e.consume();
+        }
+    }
+
+    public boolean checkValidity() {
+        if(_map[_pacman.getX() + _futureX][_pacman.getY() + _futureY].getIsAWall()) {
+            return false;
+        } else {
+            return true;
         }
     }
 }
