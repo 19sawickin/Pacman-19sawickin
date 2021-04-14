@@ -19,16 +19,16 @@ public class Pacman {
     public void move(Direction direction) {
         switch(direction) {
             case LEFT:
-                _pacman.setCenterX(_pacman.getCenterX() + -10);
+                _pacman.setCenterX(_pacman.getCenterX() + -1*Constants.SQUARE_WIDTH);
                 break;
             case RIGHT:
-                _pacman.setCenterX(_pacman.getCenterX() + 10);
+                _pacman.setCenterX(_pacman.getCenterX() + Constants.SQUARE_WIDTH);
                 break;
             case UP:
-                _pacman.setCenterY(_pacman.getCenterY() + -10);
+                _pacman.setCenterY(_pacman.getCenterY() + -1*Constants.SQUARE_WIDTH);
                 break;
             case DOWN:
-                _pacman.setCenterY(_pacman.getCenterY() + 10);
+                _pacman.setCenterY(_pacman.getCenterY() + Constants.SQUARE_WIDTH);
                 break;
             default:
                 break;

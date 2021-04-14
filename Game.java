@@ -14,29 +14,36 @@ import javafx.scene.input.KeyEvent;
 public class Game {
 
     private MazeSquare[][] _map;
+    private MazeSquare _mazeSquare;
     private Timeline _timeline;
     private Pacman _pacman;
+    private Direction _direction;
 
     public Game(Pane gamePane) {
         SquareType map[][] = cs15.fnl.pacmanSupport.SupportMap.getSupportMap();
         _map = new MazeSquare[Constants.ROWS][Constants.COLUMNS];
         _pacman = null;
+        _mazeSquare = null;
+        _direction = Direction.LEFT;
         this.setupBoard(gamePane, map);
         this.generateMap(map, gamePane);
+        this.setupTimeline();
         gamePane.addEventHandler(KeyEvent.KEY_PRESSED, new KeyHandler());
         gamePane.setFocusTraversable(true);
-        this.setupTimeline();
     }
 
     public void setupBoard(Pane gamePane, SquareType[][] map) {
         for(int i=0; i<Constants.ROWS; i++) {
             for(int j=0; j<Constants.COLUMNS; j++) {
                 if(map[i][j]==SquareType.WALL) {
-                    _map[i][j] = new MazeSquare(gamePane, Color.DARKBLUE, i, j);
+                    _mazeSquare = new MazeSquare(gamePane, Color.DARKBLUE, i, j);
+                    _mazeSquare.setIsAWall(true);
                 }
                 else {
-                    _map[i][j] = new MazeSquare(gamePane, Color.BLACK, i, j);
+                    _mazeSquare = new MazeSquare(gamePane, Color.BLACK, i, j);
+                    _mazeSquare.setIsAWall(false);
                 }
+                _map[i][j] = _mazeSquare;
             }
         }
     }
@@ -68,7 +75,7 @@ public class Game {
 
     public void setupTimeline() {
         _timeline = new Timeline
-                (new KeyFrame(Duration.seconds(tetris.Constants.DURATION),
+                (new KeyFrame(Duration.seconds(Constants.DURATION),
                         new TimeHandler()));
         _timeline.setCycleCount(Animation.INDEFINITE);
         _timeline.play();
@@ -77,7 +84,7 @@ public class Game {
     private class TimeHandler implements EventHandler<ActionEvent> {
 
         public void handle(ActionEvent kf) {
-
+            _pacman.move(_direction);
         }
     }
 
@@ -86,16 +93,20 @@ public class Game {
         public void handle(KeyEvent e) {
             switch(e.getCode()) {
                 case LEFT:
-                    _pacman.move(Direction.LEFT);
+                    _direction = Direction.LEFT;
+                    //_pacman.move(Direction.LEFT);
                     break;
                 case RIGHT:
-                    _pacman.move(Direction.RIGHT);
+                    _direction = Direction.RIGHT;
+                    //_pacman.move(Direction.RIGHT);
                     break;
                 case UP:
-                    _pacman.move(Direction.UP);
+                    _direction = Direction.UP;
+                    //_pacman.move(Direction.UP);
                     break;
                 case DOWN:
-                    _pacman.move(Direction.DOWN);
+                    _direction = Direction.DOWN;
+                    //_pacman.move(Direction.DOWN);
                     break;
                 default:
                     break;
