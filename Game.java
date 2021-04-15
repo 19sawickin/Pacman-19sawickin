@@ -24,9 +24,9 @@ public class Game {
         SquareType map[][] = cs15.fnl.pacmanSupport.SupportMap.getSupportMap();
         _map = new MazeSquare[Constants.ROWS][Constants.COLUMNS];
         _pacman = null;
-        _futureX = -1;
+        _futureX = 1;
         _futureY = 0;
-        _direction = Direction.LEFT;
+        _direction = Direction.RIGHT;
         this.setupBoard(gamePane, map);
         this.generateMap(map, gamePane);
         this.setupTimeline();
@@ -54,10 +54,10 @@ public class Game {
             for (int j = 0; j<Constants.COLUMNS; j++) {
                 switch(map[i][j]) {
                     case DOT:
-                        new Dot(gamePane, i, j);
+                        _map[i][j].getArrayList().add(new Dot(gamePane, i, j));
                         break;
                     case ENERGIZER:
-                        new Energizer(gamePane, i, j);
+                        _map[i][j].getArrayList().add(new Energizer(gamePane, i, j));
                         break;
                     case PACMAN_START_LOCATION:
                         _pacman = new Pacman(gamePane, i, j);
@@ -85,9 +85,7 @@ public class Game {
     private class TimeHandler implements EventHandler<ActionEvent> {
 
         public void handle(ActionEvent kf) {
-            while(checkValidity()) {
-                _pacman.move(_direction);
-            }
+            _pacman.move(_direction);
         }
     }
 
@@ -96,32 +94,19 @@ public class Game {
         public void handle(KeyEvent e) {
             switch(e.getCode()) {
                 case LEFT:
-                    if(checkValidity()) {
+                    if(checkValidity(Direction.LEFT)) {
                         _direction = Direction.LEFT;
-                        _futureX = -1;
-                        _futureY = 0;
                     }
+                    Game.this.checkValidity();
                     break;
                 case RIGHT:
-                    if(checkValidity()) {
-                        _direction = Direction.RIGHT;
-                        _futureX = 1;
-                        _futureY = 0;
-                    }
+                    Game.this.checkValidity();
                     break;
                 case UP:
-                    if(checkValidity()) {
-                        _direction = Direction.UP;
-                        _futureX = 0;
-                        _futureY = -1;
-                    }
+                    Game.this.checkValidity();
                     break;
                 case DOWN:
-                    if(checkValidity()) {
-                        _direction = Direction.DOWN;
-                        _futureX = 0;
-                        _futureY = 1;
-                    }
+                    Game.this.checkValidity();
                     break;
                 default:
                     break;
@@ -130,11 +115,8 @@ public class Game {
         }
     }
 
-    public boolean checkValidity() {
-        if(_map[_pacman.getX() + _futureX][_pacman.getY() + _futureY].getIsAWall()) {
-            return false;
-        } else {
-            return true;
+    public void checkValidity(Direction direction) {
+        if(_map[_pacman.getX()][_pacman.getY()].getIsAWall()) {
         }
     }
 }

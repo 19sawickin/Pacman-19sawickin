@@ -18,8 +18,11 @@ public class MazeSquare {
         mazeSquare.setY(i*Constants.SQUARE_WIDTH);
         mazeSquare.setFill(color);
         gamePane.getChildren().add(mazeSquare);
-        //_smartSquare = new ArrayList();
-        //_map[i][j] = _smartSquare;
+        _smartSquare = new ArrayList();
+    }
+
+    public ArrayList getArrayList() {
+        return _smartSquare;
     }
 
     public void setIsAWall(Boolean isAWall) {

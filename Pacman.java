@@ -42,4 +42,9 @@ public class Pacman {
                 break;
         }
     }
+
+//    public void move(int futureX, int futureY) {
+//        _pacman.setCenterX(_pacman.getCenterX() + futureX*Constants.SQUARE_WIDTH);
+//        _pacman.setCenterY(_pacman.getCenterY() + futureY*Constants.SQUARE_WIDTH);
+//    }
 }
