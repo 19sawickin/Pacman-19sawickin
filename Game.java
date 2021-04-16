@@ -20,15 +20,17 @@ public class Game {
     private Direction _direction;
     private int _futureX;
     private int _futureY;
+    private int _score;
 
     public Game(Pane gamePane) {
         SquareType map[][] = cs15.fnl.pacmanSupport.SupportMap.getSupportMap();
         _map = new MazeSquare[Constants.ROWS][Constants.COLUMNS];
         _gamePane = gamePane;
+        _score = 0;
         _pacman = null;
-        _futureX = 1;
+        _futureX = -1;
         _futureY = 0;
-        _direction = Direction.RIGHT;
+        _direction = Direction.LEFT;
         this.setupBoard(gamePane, map);
         this.generateMap(map, gamePane);
         this.setupTimeline();
@@ -88,8 +90,10 @@ public class Game {
 
         public void handle(ActionEvent kf) {
             Game.this.checkSquare();
-            if(checkValidity(_direction)) {
+            if(checkValidity(_futureX, _futureY)) {
                 _pacman.move(_direction);
+            } else {
+                _timeline.pause();
             }
         }
     }
@@ -99,22 +103,22 @@ public class Game {
         public void handle(KeyEvent e) {
             switch(e.getCode()) {
                 case LEFT:
-                    if(checkValidity(Direction.LEFT)) {
+                    if(checkValidity(-1, 0)) {
                         _direction = Direction.LEFT;
                     }
                     break;
                 case RIGHT:
-                    if(checkValidity(Direction.RIGHT)) {
+                    if(checkValidity(1, 0)) {
                         _direction = Direction.RIGHT;
                     }
                     break;
                 case UP:
-                    if(checkValidity(Direction.UP)) {
+                    if(checkValidity(0 ,-1)) {
                         _direction = Direction.UP;
                     }
                     break;
                 case DOWN:
-                    if(checkValidity(Direction.DOWN)) {
+                    if(checkValidity(0, 1)) {
                         _direction = Direction.DOWN;
                     }
                     break;
@@ -125,30 +129,13 @@ public class Game {
         }
     }
 
-    public boolean checkValidity(Direction direction) {
-        switch(direction) {
-            case LEFT:
-                _futureX = -1;
-                _futureY = 0;
-                break;
-            case RIGHT:
-                _futureX = 1;
-                _futureY = 0;
-                break;
-            case UP:
-                _futureX = 0;
-                _futureY = -1;
-                break;
-            case DOWN:
-                _futureX = 0;
-                _futureY = 1;
-                break;
-            default:
-                break;
-        }
-        if(_map[_pacman.getX() + _futureX][_pacman.getY() + _futureY].getIsAWall()) {
+    public boolean checkValidity(int futureX, int futureY) {
+        if(_map[_pacman.getX() + futureX][_pacman.getY() + futureY].getIsAWall()) {
+            System.out.println("Wall detected " + _pacman.getX());
             return false;
         } else {
+            _futureX = futureX;
+            _futureY = futureY;
             return true;
         }
     }
@@ -156,11 +143,13 @@ public class Game {
     public void checkSquare() {
         int i = _pacman.getX();
         int j = _pacman.getY();
-        while(_map[i][j].getArrayList().isEmpty()==false) {
+        if(!_map[i][j].getArrayList().isEmpty()) {
             for(int k=0; k<_map[i][j].getArrayList().size(); k++) {
                 Collidable object = _map[i][j].getArrayList().get(k);
+                object.collide(_score);
                 _gamePane.getChildren().remove(object);
-                object.collide();
+                _map[i][j].getArrayList().remove(object);
+                System.out.println("Removed");
             }
         }
     }

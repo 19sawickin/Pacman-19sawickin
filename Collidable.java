@@ -1,5 +1,5 @@
 package pacman;
 
 public interface Collidable {
-    void collide();
+    void collide(int score);
 }
