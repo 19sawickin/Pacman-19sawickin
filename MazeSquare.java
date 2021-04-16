@@ -8,8 +8,7 @@ import java.util.ArrayList;
 
 public class MazeSquare {
 
-    private ArrayList _smartSquare;
-    private Object[][] _map;
+    private ArrayList<Collidable> _smartSquare;
     private boolean _isAWall = false;
 
     public MazeSquare(Pane gamePane, Color color, int i, int j) {
@@ -21,7 +20,7 @@ public class MazeSquare {
         _smartSquare = new ArrayList();
     }
 
-    public ArrayList getArrayList() {
+    public ArrayList<Collidable> getArrayList() {
         return _smartSquare;
     }
 

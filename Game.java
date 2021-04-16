@@ -13,6 +13,7 @@ import javafx.scene.input.KeyEvent;
 
 public class Game {
 
+    private Pane _gamePane;
     private MazeSquare[][] _map;
     private Timeline _timeline;
     private Pacman _pacman;
@@ -23,6 +24,7 @@ public class Game {
     public Game(Pane gamePane) {
         SquareType map[][] = cs15.fnl.pacmanSupport.SupportMap.getSupportMap();
         _map = new MazeSquare[Constants.ROWS][Constants.COLUMNS];
+        _gamePane = gamePane;
         _pacman = null;
         _futureX = 1;
         _futureY = 0;
@@ -85,7 +87,10 @@ public class Game {
     private class TimeHandler implements EventHandler<ActionEvent> {
 
         public void handle(ActionEvent kf) {
-            _pacman.move(_direction);
+            Game.this.checkSquare();
+            if(checkValidity(_direction)) {
+                _pacman.move(_direction);
+            }
         }
     }
 
@@ -97,16 +102,21 @@ public class Game {
                     if(checkValidity(Direction.LEFT)) {
                         _direction = Direction.LEFT;
                     }
-                    Game.this.checkValidity();
                     break;
                 case RIGHT:
-                    Game.this.checkValidity();
+                    if(checkValidity(Direction.RIGHT)) {
+                        _direction = Direction.RIGHT;
+                    }
                     break;
                 case UP:
-                    Game.this.checkValidity();
+                    if(checkValidity(Direction.UP)) {
+                        _direction = Direction.UP;
+                    }
                     break;
                 case DOWN:
-                    Game.this.checkValidity();
+                    if(checkValidity(Direction.DOWN)) {
+                        _direction = Direction.DOWN;
+                    }
                     break;
                 default:
                     break;
@@ -115,8 +125,43 @@ public class Game {
         }
     }
 
-    public void checkValidity(Direction direction) {
-        if(_map[_pacman.getX()][_pacman.getY()].getIsAWall()) {
+    public boolean checkValidity(Direction direction) {
+        switch(direction) {
+            case LEFT:
+                _futureX = -1;
+                _futureY = 0;
+                break;
+            case RIGHT:
+                _futureX = 1;
+                _futureY = 0;
+                break;
+            case UP:
+                _futureX = 0;
+                _futureY = -1;
+                break;
+            case DOWN:
+                _futureX = 0;
+                _futureY = 1;
+                break;
+            default:
+                break;
+        }
+        if(_map[_pacman.getX() + _futureX][_pacman.getY() + _futureY].getIsAWall()) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public void checkSquare() {
+        int i = _pacman.getX();
+        int j = _pacman.getY();
+        while(_map[i][j].getArrayList().isEmpty()==false) {
+            for(int k=0; k<_map[i][j].getArrayList().size(); k++) {
+                Collidable object = _map[i][j].getArrayList().get(k);
+                _gamePane.getChildren().remove(object);
+                object.collide();
+            }
         }
     }
 }
