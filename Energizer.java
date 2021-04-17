@@ -1,20 +1,28 @@
 package pacman;
 
+import javafx.scene.*;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
 public class Energizer implements Collidable{
 
+    private Circle _energizer;
+
     public Energizer(Pane gamePane, int i, int j) {
-        Circle energizer = new Circle(Constants.ENERGIZER_RADIUS);
-        energizer.setCenterX(j*Constants.SQUARE_WIDTH + Constants.OFFSET);
-        energizer.setCenterY(i*Constants.SQUARE_WIDTH + Constants.OFFSET);
-        energizer.setFill(Color.WHITE);
-        gamePane.getChildren().add(energizer);
+        Circle _energizer = new Circle(Constants.ENERGIZER_RADIUS);
+        _energizer.setCenterX(j*Constants.SQUARE_WIDTH + Constants.OFFSET);
+        _energizer.setCenterY(i*Constants.SQUARE_WIDTH + Constants.OFFSET);
+        _energizer.setFill(Color.WHITE);
+        gamePane.getChildren().add(_energizer);
     }
 
     public void collide(int score) {
         score = score + 100;
     }
+
+    public Node getNode() {
+        return _energizer;
+    }
+
 }

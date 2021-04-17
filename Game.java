@@ -147,10 +147,17 @@ public class Game {
             for(int k=0; k<_map[i][j].getArrayList().size(); k++) {
                 Collidable object = _map[i][j].getArrayList().get(k);
                 object.collide(_score);
-                _gamePane.getChildren().remove(object);
-                _map[i][j].getArrayList().remove(object);
+                _gamePane.getChildren().remove(object.getNode());
                 System.out.println("Removed");
             }
+            //_map[i][j].getArrayList().remove(object);
         }
     }
 }
+
+// get node method in interface.
+
+// in collidable interface, make method to getNode and implement
+/*
+
+ */
