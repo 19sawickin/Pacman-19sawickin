@@ -28,9 +28,9 @@ public class Game {
         _gamePane = gamePane;
         _score = 0;
         _pacman = null;
-        _futureX = -1;
+        _futureX = 1;
         _futureY = 0;
-        _direction = Direction.LEFT;
+        _direction = Direction.RIGHT;
         this.setupBoard(gamePane, map);
         this.generateMap(map, gamePane);
         this.setupTimeline();
@@ -92,8 +92,6 @@ public class Game {
             Game.this.checkSquare();
             if(checkValidity(_futureX, _futureY)) {
                 _pacman.move(_direction);
-            } else {
-                _timeline.pause();
             }
         }
     }
@@ -130,8 +128,7 @@ public class Game {
     }
 
     public boolean checkValidity(int futureX, int futureY) {
-        if(_map[_pacman.getX() + futureX][_pacman.getY() + futureY].getIsAWall()) {
-            System.out.println("Wall detected " + _pacman.getX());
+        if(_map[_pacman.getY() + futureY][_pacman.getX() + futureX].getIsAWall()) {
             return false;
         } else {
             _futureX = futureX;
@@ -141,23 +138,15 @@ public class Game {
     }
 
     public void checkSquare() {
-        int i = _pacman.getX();
-        int j = _pacman.getY();
+        int j = _pacman.getX();
+        int i = _pacman.getY();
         if(!_map[i][j].getArrayList().isEmpty()) {
             for(int k=0; k<_map[i][j].getArrayList().size(); k++) {
                 Collidable object = _map[i][j].getArrayList().get(k);
                 object.collide(_score);
                 _gamePane.getChildren().remove(object.getNode());
-                System.out.println("Removed");
+                _map[i][j].getArrayList().remove(object);
             }
-            //_map[i][j].getArrayList().remove(object);
         }
     }
 }
-
-// get node method in interface.
-
-// in collidable interface, make method to getNode and implement
-/*
-
- */

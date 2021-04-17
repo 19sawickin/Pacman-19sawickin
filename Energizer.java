@@ -10,7 +10,7 @@ public class Energizer implements Collidable{
     private Circle _energizer;
 
     public Energizer(Pane gamePane, int i, int j) {
-        Circle _energizer = new Circle(Constants.ENERGIZER_RADIUS);
+        _energizer = new Circle(Constants.ENERGIZER_RADIUS);
         _energizer.setCenterX(j*Constants.SQUARE_WIDTH + Constants.OFFSET);
         _energizer.setCenterY(i*Constants.SQUARE_WIDTH + Constants.OFFSET);
         _energizer.setFill(Color.WHITE);
