@@ -11,23 +11,37 @@ import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import javafx.scene.input.KeyEvent;
 
+import java.util.LinkedList;
+
 public class Game {
 
     private Pane _gamePane;
     private MazeSquare[][] _map;
     private Timeline _timeline;
+    private Timeline _ghostTimeline;
     private Pacman _pacman;
+    private Ghost _red;
+    private Ghost _blue;
+    private Ghost _orange;
+    private Ghost _pink;
     private Direction _direction;
     private int _futureX;
     private int _futureY;
     private int _score;
+    private Direction[][] _directionArray;
+    private LinkedList<BoardCoordinate> Q;
 
     public Game(Pane gamePane) {
         SquareType map[][] = cs15.fnl.pacmanSupport.SupportMap.getSupportMap();
         _map = new MazeSquare[Constants.ROWS][Constants.COLUMNS];
+        _directionArray = new Direction[Constants.ROWS][Constants.COLUMNS];
         _gamePane = gamePane;
         _score = 0;
         _pacman = null;
+        _red = null;
+        _blue = null;
+        _orange = null;
+        _pink = null;
         _futureX = 1;
         _futureY = 0;
         _direction = Direction.RIGHT;
@@ -67,10 +81,10 @@ public class Game {
                         _pacman = new Pacman(gamePane, i, j);
                         break;
                     case GHOST_START_LOCATION:
-                        new Ghost(gamePane, i, j, Color.RED, 0, -2);
-                        new Ghost(gamePane, i, j, Color.PINK, -1, 0);
-                        new Ghost(gamePane, i, j, Color.LIGHTBLUE, 0, 0);
-                        new Ghost(gamePane, i, j, Color.ORANGE, 1, 0);
+                        _red = new Ghost(gamePane, i, j, Color.RED, 0, -2);
+                        _pink = new Ghost(gamePane, i, j, Color.PINK, -1, 0);
+                        _blue = new Ghost(gamePane, i, j, Color.LIGHTBLUE, 0, 0);
+                        _orange = new Ghost(gamePane, i, j, Color.ORANGE, 1, 0);
                     default:
                         break;
                 }
@@ -82,8 +96,13 @@ public class Game {
         _timeline = new Timeline
                 (new KeyFrame(Duration.seconds(Constants.DURATION),
                         new TimeHandler()));
+        _ghostTimeline = new Timeline
+                (new KeyFrame(Duration.seconds(Constants.DURATION),
+                        new GhostTimeHandler()));
         _timeline.setCycleCount(Animation.INDEFINITE);
+        _ghostTimeline.setCycleCount(Animation.INDEFINITE);
         _timeline.play();
+        _ghostTimeline.play();
     }
 
     private class TimeHandler implements EventHandler<ActionEvent> {
@@ -93,6 +112,14 @@ public class Game {
             if(checkValidity(_futureX, _futureY)) {
                 _pacman.move(_direction);
             }
+        }
+    }
+
+    private class GhostTimeHandler implements EventHandler<ActionEvent> {
+
+        public void handle(ActionEvent kf) {
+            _red.move(_red.bfs(), _red);
+
         }
     }
 
