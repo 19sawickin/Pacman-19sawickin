@@ -56,54 +56,116 @@ public class Ghost {
         LinkedList Q = new LinkedList<BoardCoordinate>();
         Direction[][] directionArray = new Direction[Constants.ROWS][Constants.COLUMNS];
         BoardCoordinate closestSquare = root;
-        Direction direction = Direction.LEFT;
-        this.initialNeighbors(root, map, directionArray, Q);
+        BoardCoordinate current = root;
+        Direction direction = Direction.UP;
+        directionArray[root.getRow()][root.getColumn()] = direction;
+        this.populateNeighbors(current, map, directionArray, Q);
         while(!Q.isEmpty()) {
-            BoardCoordinate current = Q.remove();
+            current = Q.remove();
             if(this.distanceToTarget(current, target) <
                     this.distanceToTarget(closestSquare, target)) {
                 closestSquare = current;
+                direction = directionArray[closestSquare.getRow()][closestSquare.getColumn()];
             }
-            this.checkNeighbors();
+            this.visitNeighbors(current, map, directionArray, Q);
         }
         return direction;
     }
 
-    public void initialNeighbors(BoardCoordinate root, MazeSquare[][] map,
-                               Direction[][] directionArray,
-                               LinkedList<BoardCoordinate> Q) {
-        MazeSquare leftNeighbor = map[root.getRow()][root.getColumn() - 1];
-        MazeSquare rightNeighbor = map[root.getRow()][root.getColumn() + 1];
-        MazeSquare upNeighbor = map[root.getRow() - 1][root.getColumn()];
-        MazeSquare downNeighbor = map[root.getRow() + 1][root.getColumn()];
-        if(!leftNeighbor.getIsAWall()) {
-            directionArray[root.getRow()][root.getColumn() - 1] = Direction.LEFT;
-            Q.add(new BoardCoordinate(root.getRow(), root.getColumn() - 1,
-                    false));
-        }
-        if(!rightNeighbor.getIsAWall()) {
-            directionArray[root.getRow()][root.getColumn() + 1] = Direction.RIGHT;
-            Q.add(new BoardCoordinate(root.getRow(), root.getColumn() + 1,
-                    false));
-        }
-        if(!upNeighbor.getIsAWall()) {
-            directionArray[root.getRow() - 1][root.getColumn()] = Direction.UP;
-            Q.add(new BoardCoordinate(root.getRow() - 1, root.getColumn(),
-                    false));
-        }
-        if(!downNeighbor.getIsAWall()) {
-            directionArray[root.getRow() + 1][root.getColumn()] = Direction.DOWN;
-            Q.add(new BoardCoordinate(root.getRow() + 1, root.getColumn(),
-                    false));
+    public void populateNeighbors(BoardCoordinate current, MazeSquare[][] map,
+                          Direction[][] directionArray, LinkedList<BoardCoordinate> Q) {
+        this.checkNeighbors(0, -1, current, directionArray, map, Q, true); // LEFT
+        this.checkNeighbors(0, 1, current, directionArray, map, Q, true); // RIGHT
+        this.checkNeighbors(-1, 0, current, directionArray, map, Q, true); // UP
+        this.checkNeighbors(1, 0, current, directionArray, map, Q, true); // DOWN
+    }
+
+    public void visitNeighbors(BoardCoordinate current, MazeSquare[][] map,
+                                  Direction[][] directionArray, LinkedList<BoardCoordinate> Q) {
+        this.checkNeighbors(0, -1, current, directionArray, map, Q, false); // LEFT
+        this.checkNeighbors(0, 1, current, directionArray, map, Q, false); // RIGHT
+        this.checkNeighbors(-1, 0, current, directionArray, map, Q, false); // UP
+        this.checkNeighbors(1, 0, current, directionArray, map, Q, false); // DOWN
+    }
+
+    public void checkNeighbors(int i, int j, BoardCoordinate current,
+                               Direction[][] directionArray, MazeSquare[][] map,
+                               LinkedList<BoardCoordinate> Q, boolean first) {
+        if(!first) {
+            if(!map[current.getRow()+i][current.getColumn()+j].getIsAWall() &&
+            directionArray[current.getRow()+i][current.getColumn()+j]!=null) {
+                directionArray[current.getRow()+i][current.getColumn()+j] =
+                        directionArray[current.getRow()][current.getColumn()];
+                Q.add(new BoardCoordinate(current.getRow() + i,
+                        current.getColumn() + j, false));
+            }
+        } else {
+            if(!map[current.getRow()+i][current.getColumn()+j].getIsAWall()) {
+                switch(j) {
+                    case -1:
+                        directionArray[current.getRow()+i][current.getColumn()+j] =
+                                Direction.LEFT;
+                        break;
+                    case 1:
+                        directionArray[current.getRow()+i][current.getColumn()+j] =
+                                Direction.RIGHT;
+                        break;
+                    default:
+                        break;
+                }
+                switch(i) {
+                    case -1:
+                        directionArray[current.getRow()+i][current.getColumn()+j] =
+                                Direction.UP;
+                        break;
+                    case 1:
+                        directionArray[current.getRow()+i][current.getColumn()+j] =
+                                Direction.DOWN;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            Q.add(new BoardCoordinate(current.getRow()+i,
+                    current.getColumn()+j, false));
         }
     }
 
     public int distanceToTarget(BoardCoordinate current, BoardCoordinate target) {
-
-    }
-
-    public void checkNeighbors() {
-
-
+        double distance = Math.sqrt((current.getRow()-target.getRow())^2 +
+                                (current.getColumn()-target.getColumn())^2);
+        return (int)distance;
     }
 }
+
+
+
+
+//    public void initialNeighbors(BoardCoordinate root, MazeSquare[][] map,
+//                                 Direction[][] directionArray,
+//                                 LinkedList<BoardCoordinate> Q) {
+//        MazeSquare leftNeighbor = map[root.getRow()][root.getColumn() - 1];
+//        MazeSquare rightNeighbor = map[root.getRow()][root.getColumn() + 1];
+//        MazeSquare upNeighbor = map[root.getRow() - 1][root.getColumn()];
+//        MazeSquare downNeighbor = map[root.getRow() + 1][root.getColumn()];
+//        if(!leftNeighbor.getIsAWall()) {
+//            directionArray[root.getRow()][root.getColumn() - 1] = Direction.LEFT;
+//            Q.add(new BoardCoordinate(root.getRow(), root.getColumn() - 1,
+//                    false));
+//        }
+//        if(!rightNeighbor.getIsAWall()) {
+//            directionArray[root.getRow()][root.getColumn() + 1] = Direction.RIGHT;
+//            Q.add(new BoardCoordinate(root.getRow(), root.getColumn() + 1,
+//                    false));
+//        }
+//        if(!upNeighbor.getIsAWall()) {
+//            directionArray[root.getRow() - 1][root.getColumn()] = Direction.UP;
+//            Q.add(new BoardCoordinate(root.getRow() - 1, root.getColumn(),
+//                    false));
+//        }
+//        if(!downNeighbor.getIsAWall()) {
+//            directionArray[root.getRow() + 1][root.getColumn()] = Direction.DOWN;
+//            Q.add(new BoardCoordinate(root.getRow() + 1, root.getColumn(),
+//                    false));
+//        }
+//    }
