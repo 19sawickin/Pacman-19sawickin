@@ -140,9 +140,9 @@ public class Ghost {
                     default:
                         break;
                 }
-            }
             Q.add(new BoardCoordinate(current.getRow()+i,
-                    current.getColumn()+j, false));
+                        current.getColumn()+j, false));
+            }
         }
     }
 
