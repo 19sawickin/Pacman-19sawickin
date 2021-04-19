@@ -11,8 +11,6 @@ import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import javafx.scene.input.KeyEvent;
 
-import java.util.LinkedList;
-
 public class Game {
 
     private Pane _gamePane;
@@ -28,13 +26,10 @@ public class Game {
     private int _futureX;
     private int _futureY;
     private int _score;
-    private Direction[][] _directionArray;
-    private LinkedList<BoardCoordinate> Q;
 
     public Game(Pane gamePane) {
         SquareType map[][] = cs15.fnl.pacmanSupport.SupportMap.getSupportMap();
         _map = new MazeSquare[Constants.ROWS][Constants.COLUMNS];
-        _directionArray = new Direction[Constants.ROWS][Constants.COLUMNS];
         _gamePane = gamePane;
         _score = 0;
         _pacman = null;
@@ -118,7 +113,11 @@ public class Game {
     private class GhostTimeHandler implements EventHandler<ActionEvent> {
 
         public void handle(ActionEvent kf) {
-            _red.move(_red.bfs(), _red);
+            BoardCoordinate target = new BoardCoordinate(_pacman.getX(), _pacman.getY(),
+                    true);
+            BoardCoordinate root = new BoardCoordinate(_red.getX(), _red.getY(),
+                    false);
+            _red.move(_red.bfs(target, root, _map), _red);
 
         }
     }
