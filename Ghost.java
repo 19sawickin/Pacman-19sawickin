@@ -63,7 +63,7 @@ public class Ghost {
         while(!Q.isEmpty()) {
             current = Q.remove();
             if(this.distanceToTarget(current, target) <
-                    this.distanceToTarget(closestSquare, target)) {
+                this.distanceToTarget(closestSquare, target)) {
                 closestSquare = current;
                 direction = directionArray[closestSquare.getRow()][closestSquare.getColumn()];
             }
@@ -91,16 +91,31 @@ public class Ghost {
     public void checkNeighbors(int i, int j, BoardCoordinate current,
                                Direction[][] directionArray, MazeSquare[][] map,
                                LinkedList<BoardCoordinate> Q, boolean first) {
+
         if(!first) {
-            if(!map[current.getRow()+i][current.getColumn()+j].getIsAWall() &&
-            directionArray[current.getRow()+i][current.getColumn()+j]!=null) {
+            if(j==1 && current.getColumn()==22 && directionArray[current.getRow()+i][0]==null) {
+                directionArray[current.getRow()][0] = directionArray[current.getRow()][current.getColumn()];
+                Q.add(new BoardCoordinate(current.getRow(),0,false));
+            } else if(j==-1 && current.getColumn()==0 && directionArray[current.getRow()+i][22]==null) {
+                directionArray[current.getRow()][22] = directionArray[current.getRow()][current.getColumn()];
+                Q.add(new BoardCoordinate(current.getRow(),22,false));
+            } else if (!map[current.getRow()+i][current.getColumn()+j].getIsAWall() &&
+            directionArray[current.getRow()+i][current.getColumn()+j]==null) {
+
                 directionArray[current.getRow()+i][current.getColumn()+j] =
                         directionArray[current.getRow()][current.getColumn()];
+
                 Q.add(new BoardCoordinate(current.getRow() + i,
                         current.getColumn() + j, false));
             }
         } else {
-            if(!map[current.getRow()+i][current.getColumn()+j].getIsAWall()) {
+            if(j==1 && current.getColumn()==22 && directionArray[current.getRow()+i][0]==null) {
+                directionArray[current.getRow()][0] = Direction.RIGHT;
+                Q.add(new BoardCoordinate(current.getRow(),0,false));
+            } else if(j==-1 && current.getColumn()==0 && directionArray[current.getRow()+i][22]==null) {
+                directionArray[current.getRow()][22] = Direction.LEFT;
+                Q.add(new BoardCoordinate(current.getRow(),22,false));
+            } else if(!map[current.getRow()+i][current.getColumn()+j].getIsAWall()) {
                 switch(j) {
                     case -1:
                         directionArray[current.getRow()+i][current.getColumn()+j] =
