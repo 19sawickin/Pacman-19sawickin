@@ -118,7 +118,6 @@ public class Game {
             BoardCoordinate root = new BoardCoordinate(_red.getX(), _red.getY(),
                     false);
             _red.move(_red.bfs(target, root, _map), _red);
-
         }
     }
 
