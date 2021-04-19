@@ -36,16 +36,16 @@ public class Ghost {
     public void move(Direction direction, Ghost ghost) {
         switch(direction) {
             case LEFT:
-                ghost.setX(ghost.getX()/Constants.SQUARE_WIDTH - 1);
+                ghost.setX(ghost.getX() - Constants.SQUARE_WIDTH);
                 break;
             case RIGHT:
-                ghost.setX(ghost.getX()/Constants.SQUARE_WIDTH + 1);
+                ghost.setX(ghost.getX() + Constants.SQUARE_WIDTH);
                 break;
             case UP:
-                ghost.setY(ghost.getY()/Constants.SQUARE_WIDTH - 1);
+                ghost.setY(ghost.getY() - Constants.SQUARE_WIDTH);
                 break;
             case DOWN:
-                ghost.setY(ghost.getY()/Constants.SQUARE_WIDTH + 1);
+                ghost.setY(ghost.getY() + Constants.SQUARE_WIDTH);
                 break;
             default:
                 break;
@@ -53,7 +53,7 @@ public class Ghost {
     }
 
     public Direction bfs(BoardCoordinate target, BoardCoordinate root, MazeSquare[][] map) {
-        LinkedList Q = new LinkedList<BoardCoordinate>();
+        LinkedList<BoardCoordinate> Q = new LinkedList();
         Direction[][] directionArray = new Direction[Constants.ROWS][Constants.COLUMNS];
         BoardCoordinate closestSquare = root;
         BoardCoordinate current = root;
@@ -137,35 +137,3 @@ public class Ghost {
         return (int)distance;
     }
 }
-
-
-
-
-//    public void initialNeighbors(BoardCoordinate root, MazeSquare[][] map,
-//                                 Direction[][] directionArray,
-//                                 LinkedList<BoardCoordinate> Q) {
-//        MazeSquare leftNeighbor = map[root.getRow()][root.getColumn() - 1];
-//        MazeSquare rightNeighbor = map[root.getRow()][root.getColumn() + 1];
-//        MazeSquare upNeighbor = map[root.getRow() - 1][root.getColumn()];
-//        MazeSquare downNeighbor = map[root.getRow() + 1][root.getColumn()];
-//        if(!leftNeighbor.getIsAWall()) {
-//            directionArray[root.getRow()][root.getColumn() - 1] = Direction.LEFT;
-//            Q.add(new BoardCoordinate(root.getRow(), root.getColumn() - 1,
-//                    false));
-//        }
-//        if(!rightNeighbor.getIsAWall()) {
-//            directionArray[root.getRow()][root.getColumn() + 1] = Direction.RIGHT;
-//            Q.add(new BoardCoordinate(root.getRow(), root.getColumn() + 1,
-//                    false));
-//        }
-//        if(!upNeighbor.getIsAWall()) {
-//            directionArray[root.getRow() - 1][root.getColumn()] = Direction.UP;
-//            Q.add(new BoardCoordinate(root.getRow() - 1, root.getColumn(),
-//                    false));
-//        }
-//        if(!downNeighbor.getIsAWall()) {
-//            directionArray[root.getRow() + 1][root.getColumn()] = Direction.DOWN;
-//            Q.add(new BoardCoordinate(root.getRow() + 1, root.getColumn(),
-//                    false));
-//        }
-//    }

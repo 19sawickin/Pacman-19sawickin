@@ -115,8 +115,8 @@ public class Game {
         public void handle(ActionEvent kf) {
             BoardCoordinate target = new BoardCoordinate(_pacman.getX(), _pacman.getY(),
                     true);
-            BoardCoordinate root = new BoardCoordinate(_red.getX(), _red.getY(),
-                    false);
+            BoardCoordinate root = new BoardCoordinate(_red.getX()/Constants.SQUARE_WIDTH,
+                    _red.getY()/Constants.SQUARE_WIDTH, false);
             _red.move(_red.bfs(target, root, _map), _red);
         }
     }
