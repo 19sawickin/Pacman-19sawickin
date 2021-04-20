@@ -113,7 +113,7 @@ public class Game {
     private class GhostTimeHandler implements EventHandler<ActionEvent> {
 
         public void handle(ActionEvent kf) {
-            BoardCoordinate target = new BoardCoordinate(_pacman.getX(), _pacman.getY(),
+            BoardCoordinate target = new BoardCoordinate(8, 12,
                     true);
             BoardCoordinate root = new BoardCoordinate(_red.getX()/Constants.SQUARE_WIDTH,
                     _red.getY()/Constants.SQUARE_WIDTH, false);
