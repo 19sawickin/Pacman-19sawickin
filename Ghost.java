@@ -92,14 +92,13 @@ public class Ghost {
                                Direction[][] directionArray, MazeSquare[][] map,
                                LinkedList<BoardCoordinate> Q, boolean first) {
 
+        if(current.getColumn()==22 && j==1) {
+            j=0;
+        } else if (current.getColumn()==0 && j==-1) {
+            j=22;
+        }
         if(!first) {
-            if(j==1 && current.getColumn()==22 && directionArray[current.getRow()+i][0]==null) {
-                directionArray[current.getRow()][0] = directionArray[current.getRow()][current.getColumn()];
-                Q.add(new BoardCoordinate(current.getRow(),0,false));
-            } else if(j==-1 && current.getColumn()==0 && directionArray[current.getRow()+i][22]==null) {
-                directionArray[current.getRow()][22] = directionArray[current.getRow()][current.getColumn()];
-                Q.add(new BoardCoordinate(current.getRow(),22,false));
-            } else if (!map[current.getRow()+i][current.getColumn()+j].getIsAWall() &&
+            if (!map[current.getRow()+i][current.getColumn()+j].getIsAWall() &&
             directionArray[current.getRow()+i][current.getColumn()+j]==null) {
 
                 directionArray[current.getRow()+i][current.getColumn()+j] =
@@ -109,13 +108,7 @@ public class Ghost {
                         current.getColumn() + j, false));
             }
         } else {
-            if(j==1 && current.getColumn()==22 && directionArray[current.getRow()+i][0]==null) {
-                directionArray[current.getRow()][0] = Direction.RIGHT;
-                Q.add(new BoardCoordinate(current.getRow(),0,false));
-            } else if(j==-1 && current.getColumn()==0 && directionArray[current.getRow()+i][22]==null) {
-                directionArray[current.getRow()][22] = Direction.LEFT;
-                Q.add(new BoardCoordinate(current.getRow(),22,false));
-            } else if(!map[current.getRow()+i][current.getColumn()+j].getIsAWall()) {
+            if(!map[current.getRow()+i][current.getColumn()+j].getIsAWall()) {
                 switch(j) {
                     case -1:
                         directionArray[current.getRow()+i][current.getColumn()+j] =
@@ -152,3 +145,20 @@ public class Ghost {
         return (int)distance;
     }
 }
+
+//            if(j==1 && current.getColumn()==22 && directionArray[current.getRow()+i][0]==null) {
+//                    directionArray[current.getRow()][0] = directionArray[current.getRow()][current.getColumn()];
+//                    Q.add(new BoardCoordinate(current.getRow(),0,false));
+//                    } else if(j==-1 && current.getColumn()==0 && directionArray[current.getRow()+i][22]==null) {
+//                    directionArray[current.getRow()][22] = directionArray[current.getRow()][current.getColumn()];
+//                    Q.add(new BoardCoordinate(current.getRow(),22,false));
+//                    }
+
+
+// if(j==1 && current.getColumn()==22 && directionArray[current.getRow()+i][0]==null) {
+//         directionArray[current.getRow()][0] = Direction.RIGHT;
+//         Q.add(new BoardCoordinate(current.getRow(),0,false));
+//         } else if(j==-1 && current.getColumn()==0 && directionArray[current.getRow()+i][22]==null) {
+//         directionArray[current.getRow()][22] = Direction.LEFT;
+//         Q.add(new BoardCoordinate(current.getRow(),22,false));
+//         }
