@@ -105,7 +105,7 @@ public class Game {
         public void handle(ActionEvent kf) {
             Game.this.checkSquare();
             if(checkValidity(_futureX, _futureY)) {
-                _pacman.move(_direction);
+                _pacman.move(_direction, _pacman);
             }
         }
     }
@@ -113,11 +113,12 @@ public class Game {
     private class GhostTimeHandler implements EventHandler<ActionEvent> {
 
         public void handle(ActionEvent kf) {
-            BoardCoordinate target = new BoardCoordinate(8, 12,
+            BoardCoordinate target = new BoardCoordinate(_pacman.getY(), _pacman.getX(),
                     true);
-            BoardCoordinate root = new BoardCoordinate(_red.getX()/Constants.SQUARE_WIDTH,
-                    _red.getY()/Constants.SQUARE_WIDTH, false);
+            BoardCoordinate root = new BoardCoordinate(_red.getY()/Constants.SQUARE_WIDTH,
+                    _red.getX()/Constants.SQUARE_WIDTH, false);
             _red.move(_red.bfs(target, root, _map), _red);
+            //_pink.move(_pink.bfs(target, root, _map), _pink);
         }
     }
 

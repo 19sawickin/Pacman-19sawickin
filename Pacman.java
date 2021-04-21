@@ -24,13 +24,21 @@ public class Pacman {
         return (int)(_pacman.getCenterY() - Constants.OFFSET)/Constants.SQUARE_WIDTH;
     }
 
-    public void move(Direction direction) {
+    public void move(Direction direction, Pacman pacman) {
         switch(direction) {
             case LEFT:
-                _pacman.setCenterX(_pacman.getCenterX() + -1*Constants.SQUARE_WIDTH);
+                if(pacman.getX()==1) {
+                    _pacman.setCenterX(21*Constants.SQUARE_WIDTH + Constants.OFFSET);
+                } else {
+                    _pacman.setCenterX(_pacman.getCenterX() + -1*Constants.SQUARE_WIDTH);
+                }
                 break;
             case RIGHT:
-                _pacman.setCenterX(_pacman.getCenterX() + Constants.SQUARE_WIDTH);
+                if(pacman.getX()==21) {
+                    _pacman.setCenterX(Constants.OFFSET);
+                } else {
+                    _pacman.setCenterX(_pacman.getCenterX() + Constants.SQUARE_WIDTH);
+                }
                 break;
             case UP:
                 _pacman.setCenterY(_pacman.getCenterY() + -1*Constants.SQUARE_WIDTH);

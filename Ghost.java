@@ -9,8 +9,10 @@ public class Ghost {
 
     private Rectangle _ghost;
     private Direction _direction;
+    private Boolean _firstRun;
 
     public Ghost(Pane gamePane, int i, int j, Color color, int xOffset, int yOffset) {
+        _firstRun = true;
         _direction = Direction.UP;
         _ghost = new Rectangle(Constants.SQUARE_WIDTH, Constants.SQUARE_WIDTH);
         _ghost.setX(j*Constants.SQUARE_WIDTH + xOffset*Constants.SQUARE_WIDTH);
@@ -38,10 +40,18 @@ public class Ghost {
     public void move(Direction direction, Ghost ghost) {
         switch(direction) {
             case LEFT:
-                ghost.setX(ghost.getX() - Constants.SQUARE_WIDTH);
+                if(ghost.getX()==0) {
+                    ghost.setX(22*Constants.SQUARE_WIDTH);
+                } else {
+                    ghost.setX(ghost.getX() - Constants.SQUARE_WIDTH);
+                }
                 break;
             case RIGHT:
-                ghost.setX(ghost.getX() + Constants.SQUARE_WIDTH);
+                if(ghost.getX()==22*Constants.SQUARE_WIDTH) {
+                    ghost.setX(0);
+                } else {
+                    ghost.setX(ghost.getX() + Constants.SQUARE_WIDTH);
+                }
                 break;
             case UP:
                 ghost.setY(ghost.getY() - Constants.SQUARE_WIDTH);
@@ -52,43 +62,48 @@ public class Ghost {
             default:
                 break;
         }
+        _direction = direction;
     }
 
     public Direction bfs(BoardCoordinate target, BoardCoordinate root, MazeSquare[][] map) {
         LinkedList<BoardCoordinate> Q = new LinkedList();
         Direction[][] directionArray = new Direction[Constants.ROWS][Constants.COLUMNS];
-        BoardCoordinate closestSquare = root;
+        BoardCoordinate closestSquare = root; // SET ORIGINAL DISTANCE TO BE REALLY LARGE SO IT GOES INTO THE IF STATEMENT
+        _firstRun = true;
         BoardCoordinate current = root;
         Direction direction = Direction.UP;
-        directionArray[root.getRow()][root.getColumn()] = direction;
-        this.populateNeighbors(current, map, directionArray, Q, direction);
+        directionArray[root.getRow()][root.getColumn()] = _direction;
+        this.populateNeighbors(current, map, directionArray, Q);
         while(!Q.isEmpty()) {
             current = Q.removeFirst();
-            if(this.distanceToTarget(current, target) <
+            if(_firstRun) {
+                closestSquare = current;
+                direction = directionArray[closestSquare.getRow()][closestSquare.getColumn()];
+                _firstRun = false;
+            } else if(this.distanceToTarget(current, target) <
                 this.distanceToTarget(closestSquare, target)) {
                 closestSquare = current;
                 direction = directionArray[closestSquare.getRow()][closestSquare.getColumn()];
-                _direction = direction;
             }
             this.visitNeighbors(current, map, directionArray, Q, direction);
         }
-        return _direction;
+        return direction;
     }
 
     public void populateNeighbors(BoardCoordinate current, MazeSquare[][] map,
-                          Direction[][] directionArray, LinkedList<BoardCoordinate> Q, Direction direction) {
-        this.checkNeighbors(0, -1, current, directionArray, map, Q, true,  direction); // LEFT
-        this.checkNeighbors(0, 1, current, directionArray, map, Q, true,  direction); // RIGHT
-        this.checkNeighbors(-1, 0, current, directionArray, map, Q, true, direction); // UP
-        this.checkNeighbors(1, 0, current, directionArray, map, Q, true, direction); // DOWN
+                          Direction[][] directionArray, LinkedList<BoardCoordinate> Q) {
+        this.checkNeighbors(0, -1, current, directionArray, map, Q, true,  Direction.LEFT); // LEFT
+        this.checkNeighbors(0, 1, current, directionArray, map, Q, true,  Direction.RIGHT); // RIGHT
+        this.checkNeighbors(-1, 0, current, directionArray, map, Q, true, Direction.UP); // UP
+        this.checkNeighbors(1, 0, current, directionArray, map, Q, true, Direction.DOWN); // DOWN
     }
 
     public void visitNeighbors(BoardCoordinate current, MazeSquare[][] map,
                                   Direction[][] directionArray, LinkedList<BoardCoordinate> Q, Direction direction) {
-        this.checkNeighbors(0, -1, current, directionArray, map, Q, false, direction); // LEFT
-        this.checkNeighbors(0, 1, current, directionArray, map, Q, false, direction); // RIGHT
-        this.checkNeighbors(-1, 0, current, directionArray, map, Q, false, direction); // UP
-        this.checkNeighbors(1, 0, current, directionArray, map, Q, false, direction); // DOWN
+        this.checkNeighbors(0, -1, current, directionArray, map, Q, false, Direction.LEFT); // LEFT
+        this.checkNeighbors(0, 1, current, directionArray, map, Q, false, Direction.RIGHT); // RIGHT
+        this.checkNeighbors(-1, 0, current, directionArray, map, Q, false, Direction.UP); // UP
+        this.checkNeighbors(1, 0, current, directionArray, map, Q, false, Direction.DOWN); // DOWN
     }
 
     public void checkNeighbors(int i, int j, BoardCoordinate current,
@@ -102,7 +117,8 @@ public class Ghost {
         }
         if(!first) {
             if (!map[current.getRow()+i][current.getColumn()+j].getIsAWall() &&
-            directionArray[current.getRow()+i][current.getColumn()+j]==null && this.getOpposite(direction)!=_direction) {
+                    directionArray[current.getRow()+i][current.getColumn()+j]==null
+                    && this.getOpposite(direction)!=_direction) {
 
                 directionArray[current.getRow()+i][current.getColumn()+j] =
                         directionArray[current.getRow()][current.getColumn()];
@@ -111,7 +127,8 @@ public class Ghost {
                         current.getColumn() + j, false));
             }
         } else {
-            if(!map[current.getRow()+i][current.getColumn()+j].getIsAWall() && this.getOpposite(direction)!=_direction) {
+            if(!map[current.getRow()+i][current.getColumn()+j].getIsAWall()
+                    && this.getOpposite(direction)!=_direction) {
                 switch(j) {
                     case -1:
                         directionArray[current.getRow()+i][current.getColumn()+j] =
@@ -143,8 +160,8 @@ public class Ghost {
     }
 
     public int distanceToTarget(BoardCoordinate current, BoardCoordinate target) {
-        double distance = Math.sqrt((current.getRow()-target.getRow())^2 +
-                                (current.getColumn()-target.getColumn())^2);
+        double distance = Math.sqrt(Math.pow((current.getRow()-target.getRow()),2) +
+                Math.pow((current.getColumn()-target.getColumn()),2));
         return (int)distance;
     }
 
@@ -168,20 +185,3 @@ public class Ghost {
         return direction;
     }
 }
-
-//            if(j==1 && current.getColumn()==22 && directionArray[current.getRow()+i][0]==null) {
-//                    directionArray[current.getRow()][0] = directionArray[current.getRow()][current.getColumn()];
-//                    Q.add(new BoardCoordinate(current.getRow(),0,false));
-//                    } else if(j==-1 && current.getColumn()==0 && directionArray[current.getRow()+i][22]==null) {
-//                    directionArray[current.getRow()][22] = directionArray[current.getRow()][current.getColumn()];
-//                    Q.add(new BoardCoordinate(current.getRow(),22,false));
-//                    }
-
-
-// if(j==1 && current.getColumn()==22 && directionArray[current.getRow()+i][0]==null) {
-//         directionArray[current.getRow()][0] = Direction.RIGHT;
-//         Q.add(new BoardCoordinate(current.getRow(),0,false));
-//         } else if(j==-1 && current.getColumn()==0 && directionArray[current.getRow()+i][22]==null) {
-//         directionArray[current.getRow()][22] = Direction.LEFT;
-//         Q.add(new BoardCoordinate(current.getRow(),22,false));
-//         }
