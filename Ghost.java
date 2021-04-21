@@ -11,9 +11,18 @@ public class Ghost implements Collidable {
     private Rectangle _ghost;
     private Direction _direction;
     private Boolean _firstRun;
+    private MazeSquare[][] _map;
 
-    public Ghost(Pane gamePane, int i, int j, Color color, int xOffset, int yOffset) {
+    private boolean _frightMode;
+    private boolean _chaseMode;
+    private boolean _scatterMode;
+
+    public Ghost(Pane gamePane, int i, int j, Color color, int xOffset, int yOffset, MazeSquare[][] map) {
+        _map = map;
         _firstRun = true;
+        _frightMode = false;
+        _chaseMode = true;
+        _scatterMode = false;
         _direction = Direction.UP;
         _ghost = new Rectangle(Constants.SQUARE_WIDTH, Constants.SQUARE_WIDTH);
         _ghost.setX(j*Constants.SQUARE_WIDTH + xOffset*Constants.SQUARE_WIDTH);
@@ -23,7 +32,32 @@ public class Ghost implements Collidable {
     }
 
     public int collide() {
+        System.out.println("Ghost Collision");
         return 200;
+    }
+
+    public boolean getFrightMode() {
+        return _frightMode;
+    }
+
+    public boolean getChaseMode() {
+        return _chaseMode;
+    }
+
+    public boolean getScatterMode() {
+        return _scatterMode;
+    }
+
+    public void setFrightMode(Boolean fright) {
+        _frightMode = fright;
+    }
+
+    public void setChaseMode(Boolean chase) {
+        _chaseMode = chase;
+    }
+
+    public void setScatterMode(Boolean scatter) {
+        _scatterMode = scatter;
     }
 
     public Node getNode() {
@@ -46,7 +80,12 @@ public class Ghost implements Collidable {
         _ghost.setY(y);
     }
 
+    public void changeColor(Ghost ghost, Boolean frightMode) {
+
+    }
+
     public void move(Direction direction, Ghost ghost) {
+        _map[ghost.getY()/Constants.SQUARE_WIDTH][ghost.getX()/Constants.SQUARE_WIDTH].getArrayList().remove(ghost);
         switch(direction) {
             case LEFT:
                 if(ghost.getX()==1) {
@@ -72,6 +111,7 @@ public class Ghost implements Collidable {
             default:
                 break;
         }
+        _map[ghost.getY()/Constants.SQUARE_WIDTH][ghost.getX()/Constants.SQUARE_WIDTH].getArrayList().add(ghost);
         _direction = direction;
     }
 

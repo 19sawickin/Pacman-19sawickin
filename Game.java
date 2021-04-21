@@ -29,15 +29,12 @@ public class Game {
     private int _futureY;
     private int _score;
 
+
+
     public Game(Pane gamePane, HBox bottomPane) {
         SquareType map[][] = cs15.fnl.pacmanSupport.SupportMap.getSupportMap();
         _map = new MazeSquare[Constants.ROWS][Constants.COLUMNS];
         _gamePane = gamePane;
-        _pacman = null;
-        _red = null;
-        _blue = null;
-        _orange = null;
-        _pink = null;
         _futureX = 1;
         _futureY = 0;
         _direction = Direction.RIGHT;
@@ -78,10 +75,12 @@ public class Game {
                         _pacman = new Pacman(gamePane, i, j);
                         break;
                     case GHOST_START_LOCATION:
-                        _red = new Ghost(gamePane, i, j, Color.RED, 0, -2);
-                        _pink = new Ghost(gamePane, i, j, Color.PINK, -1, 0);
-                        _blue = new Ghost(gamePane, i, j, Color.LIGHTBLUE, 0, 0);
-                        _orange = new Ghost(gamePane, i, j, Color.ORANGE, 1, 0);
+                        _red = new Ghost(gamePane, i, j, Color.RED, 0, -2, _map);
+                        _map[i][j].getArrayList().add(_red);
+
+                        _pink = new Ghost(gamePane, i, j, Color.PINK, -1, 0, _map);
+                        _blue = new Ghost(gamePane, i, j, Color.LIGHTBLUE, 0, 0, _map);
+                        _orange = new Ghost(gamePane, i, j, Color.ORANGE, 1, 0, _map);
                     default:
                         break;
                 }
@@ -105,10 +104,10 @@ public class Game {
     private class TimeHandler implements EventHandler<ActionEvent> {
 
         public void handle(ActionEvent kf) {
-            Game.this.checkSquare();
-            if(checkValidity(_futureX, _futureY)) {
-                _pacman.move(_direction, _pacman);
-            }
+//            if(checkValidity(_futureX, _futureY)) {
+//                _pacman.move(_direction, _pacman);
+//                Game.this.checkSquare();
+//            }
         }
     }
 
@@ -118,15 +117,27 @@ public class Game {
         private int _chaseCounter = 0;
 
         public void handle(ActionEvent kf) {
-            if(_chaseCounter<20.1) {
-                this.chaseMode();
-            } else if(_scatterCounter<7.1) {
-                this.scatterMode();
-                if(_scatterCounter==7) {
-                    _chaseCounter=0;
-                    _scatterCounter=0;
-                }
+            if(checkValidity(_futureX, _futureY)) {
+                _pacman.move(_direction, _pacman);
             }
+            Game.this.checkSquare();
+            this.moveGhost();
+            Game.this.checkSquare();
+
+
+//            if(_chaseCounter<20.1) {
+//                this.chaseMode();
+//            } else if(_scatterCounter<7.1) {
+//                this.scatterMode();
+//                if(_scatterCounter==7) {
+//                    _chaseCounter=0;
+//                    _scatterCounter=0;
+//                }
+//            }
+        }
+
+        public void moveGhost() {
+            this.chaseMode();
         }
 
         public void chaseMode() {
@@ -145,6 +156,10 @@ public class Game {
                     _red.getX()/Constants.SQUARE_WIDTH, false);
             _red.move(_red.bfs(target, root, _map), _red);
             _scatterCounter++;
+        }
+
+        public void frightMode() {
+            //_red.changeColor(_red, _frightMode);
         }
     }
 
