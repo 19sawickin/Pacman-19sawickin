@@ -40,14 +40,15 @@ public class Ghost {
     public void move(Direction direction, Ghost ghost) {
         switch(direction) {
             case LEFT:
-                if(ghost.getX()==0) {
+                if(ghost.getX()==1) {
                     ghost.setX(22*Constants.SQUARE_WIDTH);
                 } else {
                     ghost.setX(ghost.getX() - Constants.SQUARE_WIDTH);
                 }
                 break;
             case RIGHT:
-                if(ghost.getX()==22*Constants.SQUARE_WIDTH) {
+                if(ghost.getX()==21*Constants.SQUARE_WIDTH) {
+                    System.out.println("Right side");
                     ghost.setX(0);
                 } else {
                     ghost.setX(ghost.getX() + Constants.SQUARE_WIDTH);
