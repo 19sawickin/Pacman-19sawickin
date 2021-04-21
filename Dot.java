@@ -22,8 +22,8 @@ public class Dot implements Collidable {
         gamePane.getChildren().add(_dot);
     }
 
-    public void collide(int score) {
-        score = score + 10;
+    public int collide() {
+        return 10;
     }
 
     public Node getNode() {

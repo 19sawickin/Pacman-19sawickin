@@ -17,8 +17,8 @@ public class Energizer implements Collidable{
         gamePane.getChildren().add(_energizer);
     }
 
-    public void collide(int score) {
-        score = score + 100;
+    public int collide() {
+        return 100;
     }
 
     public Node getNode() {

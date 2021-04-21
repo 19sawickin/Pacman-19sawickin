@@ -6,6 +6,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
@@ -14,6 +15,7 @@ import javafx.scene.input.KeyEvent;
 public class Game {
 
     private Pane _gamePane;
+    private Label _scoreLabel;
     private MazeSquare[][] _map;
     private Timeline _timeline;
     private Timeline _ghostTimeline;
@@ -27,11 +29,10 @@ public class Game {
     private int _futureY;
     private int _score;
 
-    public Game(Pane gamePane) {
+    public Game(Pane gamePane, HBox bottomPane) {
         SquareType map[][] = cs15.fnl.pacmanSupport.SupportMap.getSupportMap();
         _map = new MazeSquare[Constants.ROWS][Constants.COLUMNS];
         _gamePane = gamePane;
-        _score = 0;
         _pacman = null;
         _red = null;
         _blue = null;
@@ -40,6 +41,7 @@ public class Game {
         _futureX = 1;
         _futureY = 0;
         _direction = Direction.RIGHT;
+        this.setupScore(bottomPane);
         this.setupBoard(gamePane, map);
         this.generateMap(map, gamePane);
         this.setupTimeline();
@@ -169,10 +171,22 @@ public class Game {
         if(!_map[i][j].getArrayList().isEmpty()) {
             for(int k=0; k<_map[i][j].getArrayList().size(); k++) {
                 Collidable object = _map[i][j].getArrayList().get(k);
-                object.collide(_score);
+                _score = _score + object.collide();
                 _gamePane.getChildren().remove(object.getNode());
                 _map[i][j].getArrayList().remove(object);
             }
         }
+        this.updateScore();
+    }
+
+    public void setupScore(HBox bottomPane) {
+        _score = 0;
+        _scoreLabel = new Label("Score: " + _score);
+        _scoreLabel.setTextFill(Color.WHITE);
+        bottomPane.getChildren().add(_scoreLabel);
+    }
+
+    public void updateScore() {
+        _scoreLabel.setText("Score: " + _score);
     }
 }

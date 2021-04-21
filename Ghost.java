@@ -1,11 +1,12 @@
 package pacman;
 
+import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import java.util.LinkedList;
 
-public class Ghost {
+public class Ghost implements Collidable {
 
     private Rectangle _ghost;
     private Direction _direction;
@@ -19,6 +20,15 @@ public class Ghost {
         _ghost.setY(i*Constants.SQUARE_WIDTH + yOffset*Constants.SQUARE_WIDTH);
         _ghost.setFill(color);
         gamePane.getChildren().add(_ghost);
+    }
+
+    public int collide() {
+        return 200;
+
+    }
+
+    public Node getNode() {
+        return _ghost;
     }
 
     public int getX() {
