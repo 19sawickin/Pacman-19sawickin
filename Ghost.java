@@ -24,7 +24,6 @@ public class Ghost implements Collidable {
 
     public int collide() {
         return 200;
-
     }
 
     public Node getNode() {

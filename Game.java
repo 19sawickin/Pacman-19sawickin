@@ -41,10 +41,10 @@ public class Game {
         _futureX = 1;
         _futureY = 0;
         _direction = Direction.RIGHT;
-        this.setupScore(bottomPane);
         this.setupBoard(gamePane, map);
         this.generateMap(map, gamePane);
         this.setupTimeline();
+        this.setupScore(bottomPane);
         gamePane.addEventHandler(KeyEvent.KEY_PRESSED, new KeyHandler());
         gamePane.setFocusTraversable(true);
     }
@@ -114,13 +114,37 @@ public class Game {
 
     private class GhostTimeHandler implements EventHandler<ActionEvent> {
 
+        private int _scatterCounter = 0;
+        private int _chaseCounter = 0;
+
         public void handle(ActionEvent kf) {
+            if(_chaseCounter<20.1) {
+                this.chaseMode();
+            } else if(_scatterCounter<7.1) {
+                this.scatterMode();
+                if(_scatterCounter==7) {
+                    _chaseCounter=0;
+                    _scatterCounter=0;
+                }
+            }
+        }
+
+        public void chaseMode() {
             BoardCoordinate target = new BoardCoordinate(_pacman.getY(), _pacman.getX(),
                     true);
             BoardCoordinate root = new BoardCoordinate(_red.getY()/Constants.SQUARE_WIDTH,
                     _red.getX()/Constants.SQUARE_WIDTH, false);
             _red.move(_red.bfs(target, root, _map), _red);
-            //_pink.move(_pink.bfs(target, root, _map), _pink);
+            _chaseCounter++;
+        }
+
+        public void scatterMode() {
+            BoardCoordinate target = new BoardCoordinate(1, 1,
+                    true);
+            BoardCoordinate root = new BoardCoordinate(_red.getY()/Constants.SQUARE_WIDTH,
+                    _red.getX()/Constants.SQUARE_WIDTH, false);
+            _red.move(_red.bfs(target, root, _map), _red);
+            _scatterCounter++;
         }
     }
 
