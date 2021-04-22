@@ -10,6 +10,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 import javafx.scene.input.KeyEvent;
 
@@ -21,6 +22,8 @@ public class Game {
     private Pane _gamePane;
     private Label _scoreLabel;
     private Label _livesLabel;
+    private ArrayList<Circle> _dotArrayList;
+    private ArrayList<Circle> _energizerArrayList;
     private MazeSquare[][] _map;
     private Timeline _timeline;
     private Timeline _ghostTimeline;
@@ -43,6 +46,8 @@ public class Game {
         SquareType map[][] = cs15.fnl.pacmanSupport.SupportMap.getSupportMap();
         _map = new MazeSquare[Constants.ROWS][Constants.COLUMNS];
         _gamePane = gamePane;
+        _dotArrayList = new ArrayList();
+        _energizerArrayList = new ArrayList();
         _frightMode = false;
         _frightModeCounter = 0;
         _modeCounter = 0;
@@ -78,10 +83,10 @@ public class Game {
             for (int j = 0; j<Constants.COLUMNS; j++) {
                 switch(map[i][j]) {
                     case DOT:
-                        _map[i][j].getArrayList().add(new Dot(gamePane, i, j));
+                        _map[i][j].getArrayList().add(new Dot(gamePane, i, j, this));
                         break;
                     case ENERGIZER:
-                        _map[i][j].getArrayList().add(new Energizer(gamePane, i, j));
+                        _map[i][j].getArrayList().add(new Energizer(gamePane, i, j, this));
                         break;
                     case PACMAN_START_LOCATION:
                         _pacman = new Pacman(gamePane, i, j);
@@ -130,13 +135,16 @@ public class Game {
     private class TimeHandler implements EventHandler<ActionEvent> {
 
         public void handle(ActionEvent kf) {
-            if(_pacman.getLives()!=0) {
+            if(_pacman.getLives()!=0 && !_dotArrayList.isEmpty() && !_energizerArrayList.isEmpty()) {
                 if(checkValidity(_futureX, _futureY)) {
                     _pacman.move(_direction, _pacman);
                 }
                 Game.this.checkSquare();
                 this.moveGhost();
                 Game.this.checkSquare();
+            } else if(_dotArrayList.isEmpty() && _energizerArrayList.isEmpty()) {
+                System.out.println("You've collected everything");
+                _ghostTimeline.stop();
             } else {
                 _ghostTimeline.stop();
             }
@@ -152,8 +160,8 @@ public class Game {
             BoardCoordinate orangeRoot = new BoardCoordinate(_orange.getY()/Constants.SQUARE_WIDTH,
                     _orange.getX()/Constants.SQUARE_WIDTH, false);
             if(_frightMode) {
-                //this.frightMode(redRoot, pinkRoot, blueRoot, orangeRoot);
-                this.chaseMode(redRoot, pinkRoot, blueRoot, orangeRoot);
+                this.frightMode(redRoot, pinkRoot, blueRoot, orangeRoot);
+                //this.chaseMode(redRoot, pinkRoot, blueRoot, orangeRoot);
                 _frightModeCounter++;
                 if(_frightModeCounter==7/Constants.DURATION) {
                     Game.this.setFrightMode(false);
@@ -197,13 +205,10 @@ public class Game {
         }
 
         public void frightMode(BoardCoordinate redRoot, BoardCoordinate pinkRoot, BoardCoordinate blueRoot, BoardCoordinate orangeRoot) {
-            //_red.changeColor(_red, _frightMode);
             _red.move(Game.this.generateDirection(_red, GhostColor.RED), _red, _map, GhostColor.RED);
             _pink.move(Game.this.generateDirection(_pink, GhostColor.PINK), _pink, _map, GhostColor.PINK);
             _blue.move(Game.this.generateDirection(_blue, GhostColor.BLUE), _blue, _map, GhostColor.BLUE);
             _orange.move(Game.this.generateDirection(_orange, GhostColor.ORANGE), _orange, _map, GhostColor.ORANGE);
-            Direction direction = Direction.UP;
-
         }
 
         public void moveAll(BoardCoordinate redRoot, BoardCoordinate pinkRoot, BoardCoordinate blueRoot, BoardCoordinate orangeRoot,
@@ -279,6 +284,7 @@ public class Game {
         _livesLabel = new Label("Lives " + _pacman.getLives());
         _scoreLabel.setTextFill(Color.WHITE);
         _livesLabel.setTextFill(Color.WHITE);
+        _livesLabel.setLineSpacing(100);
         _livesLabel.setAlignment(Pos.BASELINE_CENTER);
         bottomPane.getChildren().addAll(_scoreLabel, _livesLabel);
     }
@@ -363,5 +369,13 @@ public class Game {
         _ghostPen.add(ghost);
         ghost.setX(11*Constants.SQUARE_WIDTH);
         ghost.setY(10*Constants.SQUARE_WIDTH);
+    }
+
+    public ArrayList<Circle> getDotArrayList() {
+        return _dotArrayList;
+    }
+
+    public ArrayList<Circle> getEnergizerArrayList() {
+        return _energizerArrayList;
     }
 }

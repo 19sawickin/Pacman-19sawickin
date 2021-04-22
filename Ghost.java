@@ -17,7 +17,6 @@ public class Ghost implements Collidable {
 
     public Ghost(Pane gamePane, int i, int j, Color color, int xOffset, int yOffset) {
         _firstRun = true;
-
         _redDirection = Direction.UP;
         _pinkDirection = Direction.UP;
         _blueDirection = Direction.UP;
@@ -102,15 +101,6 @@ public class Ghost implements Collidable {
         }
         map[ghost.getY()/Constants.SQUARE_WIDTH][ghost.getX()/Constants.SQUARE_WIDTH].getArrayList().add(ghost);
         this.setDirection(ghostColor, direction);
-        //_direction = direction;
-    }
-
-    public void checkWrapping(Ghost ghost) {
-        if(ghost.getX()==0) {
-            ghost.setX(22*Constants.SQUARE_WIDTH);
-        } else if(ghost.getX()==21*Constants.SQUARE_WIDTH) {
-            ghost.setX(Constants.SQUARE_WIDTH);
-        }
     }
 
     public Direction bfs(BoardCoordinate target, BoardCoordinate root, MazeSquare[][] map, GhostColor ghostColor) {
