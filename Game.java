@@ -22,6 +22,8 @@ public class Game {
     private Pane _gamePane;
     private Label _scoreLabel;
     private Label _livesLabel;
+    private Label _gameOverLabel;
+    private Label _youWinLabel;
     private ArrayList<Circle> _dotArrayList;
     private ArrayList<Circle> _energizerArrayList;
     private MazeSquare[][] _map;
@@ -143,9 +145,13 @@ public class Game {
                 this.moveGhost();
                 Game.this.checkSquare();
             } else if(_dotArrayList.isEmpty() && _energizerArrayList.isEmpty()) {
-                System.out.println("You've collected everything");
+                _youWinLabel = new Label("You Win");
+                _gamePane.getChildren().add(_youWinLabel);
                 _ghostTimeline.stop();
             } else {
+                _gameOverLabel = new Label("You Lose");
+                _gameOverLabel.setTextFill(Color.WHITE);
+                _gamePane.getChildren().add(_gameOverLabel);
                 _ghostTimeline.stop();
             }
         }
@@ -284,8 +290,8 @@ public class Game {
         _livesLabel = new Label("Lives " + _pacman.getLives());
         _scoreLabel.setTextFill(Color.WHITE);
         _livesLabel.setTextFill(Color.WHITE);
-        _livesLabel.setLineSpacing(100);
-        _livesLabel.setAlignment(Pos.BASELINE_CENTER);
+        _scoreLabel.setTranslateX(100);
+        _livesLabel.setTranslateX(200);
         bottomPane.getChildren().addAll(_scoreLabel, _livesLabel);
     }
 
@@ -326,7 +332,7 @@ public class Game {
     }
 
     public void checkNeighbors(int row, int col, Ghost ghost, GhostColor ghostColor, ArrayList<Direction> directionArray) {
-        Direction direction = Direction.UP;
+        Direction direction = ghost.getDirection(ghostColor);
         if(!_map[ghost.getY()/Constants.SQUARE_WIDTH + row]
                 [ghost.getX()/Constants.SQUARE_WIDTH + col].getIsAWall()) {
             if(col==-1) {
