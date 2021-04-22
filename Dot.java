@@ -19,7 +19,7 @@ public class Dot implements Collidable {
     }
 
     public int collide(Pacman pacman, Pane gamePane, Game game) {
-        gamePane.getChildren().remove(this);
+        gamePane.getChildren().remove(this.getNode());
         return 10;
     }
 

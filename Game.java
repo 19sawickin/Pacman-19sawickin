@@ -36,6 +36,7 @@ public class Game {
 
     private boolean _frightMode;
     private int _frightModeCounter;
+    private int _modeCounter;
 
     public Game(Pane gamePane, HBox bottomPane) {
         SquareType map[][] = cs15.fnl.pacmanSupport.SupportMap.getSupportMap();
@@ -43,6 +44,7 @@ public class Game {
         _gamePane = gamePane;
         _frightMode = false;
         _frightModeCounter = 0;
+        _modeCounter = 0;
         _ghostPen = new LinkedList<Ghost>();
         _futureX = 1;
         _futureY = 0;
@@ -126,8 +128,6 @@ public class Game {
 
     private class TimeHandler implements EventHandler<ActionEvent> {
 
-        private int _modeCounter = 0;
-
         public void handle(ActionEvent kf) {
             if(_pacman.getLives()!=0) {
                 if(checkValidity(_futureX, _futureY)) {
@@ -142,64 +142,69 @@ public class Game {
         }
 
         public void moveGhost() {
+            BoardCoordinate redRoot = new BoardCoordinate(_red.getY()/Constants.SQUARE_WIDTH,
+                    _red.getX()/Constants.SQUARE_WIDTH, false); // RED'S TARGET
+            BoardCoordinate pinkRoot = new BoardCoordinate(_pink.getY()/Constants.SQUARE_WIDTH,
+                    _pink.getX()/Constants.SQUARE_WIDTH, false);
+            BoardCoordinate blueRoot = new BoardCoordinate(_blue.getY()/Constants.SQUARE_WIDTH,
+                    _blue.getX()/Constants.SQUARE_WIDTH, false);
+            BoardCoordinate orangeRoot = new BoardCoordinate(_orange.getY()/Constants.SQUARE_WIDTH,
+                    _orange.getX()/Constants.SQUARE_WIDTH, false);
             if(_frightMode) {
-                //this.frightMode();
-                this.chaseMode();
+                //this.frightMode(redRoot, pinkRoot, blueRoot, orangeRoot);
+                this.chaseMode(redRoot, pinkRoot, blueRoot, orangeRoot);
                 _frightModeCounter++;
-                if(_frightModeCounter==7) {
+                if(_frightModeCounter==15) {
                     Game.this.setFrightMode(false);
                     _modeCounter = 0;
                     _frightModeCounter = 0;
                 }
             } else if(_modeCounter < 20) {
-                this.chaseMode();
+                this.chaseMode(redRoot, pinkRoot, blueRoot, orangeRoot);
                 _modeCounter++;
             } else if(_modeCounter < 27) {
-                //this.scatterMode();
-                this.chaseMode();
+                this.scatterMode(redRoot, pinkRoot, blueRoot, orangeRoot);
+                //this.chaseMode(redRoot, pinkRoot, blueRoot, orangeRoot);
                 _modeCounter++;
             } else if(_modeCounter==27) {
                 _modeCounter = 0;
             }
         }
 
-        public void chaseMode() {
+        public void chaseMode(BoardCoordinate redRoot, BoardCoordinate pinkRoot, BoardCoordinate blueRoot, BoardCoordinate orangeRoot) {
             BoardCoordinate redTarget = new BoardCoordinate(_pacman.getY(), _pacman.getX(),
                     true); // TARGET IS PACMAN
-            BoardCoordinate root = new BoardCoordinate(_red.getY()/Constants.SQUARE_WIDTH,
-                    _red.getX()/Constants.SQUARE_WIDTH, false); // RED'S TARGET
-
             BoardCoordinate pinkTarget = new BoardCoordinate(_pacman.getY() + 1, _pacman.getX() - 3,
                     true); // PINK TARGETS 3 SPACES LEFT 1 SPACE DOWN FROM PACMAN
-            BoardCoordinate pinkRoot = new BoardCoordinate(_pink.getY()/Constants.SQUARE_WIDTH,
-                    _pink.getX()/Constants.SQUARE_WIDTH, false);
-
             BoardCoordinate blueTarget = new BoardCoordinate(_pacman.getY(), _pacman.getX() + 2,
-                    true); // PINK TARGETS 3 SPACES LEFT 1 SPACE DOWN FROM PACMAN
-            BoardCoordinate blueRoot = new BoardCoordinate(_blue.getY()/Constants.SQUARE_WIDTH,
-                    _blue.getX()/Constants.SQUARE_WIDTH, false);
-
+                    true); // BLUE TARGETS 2 SPACES RIGHT OF PACMAN
             BoardCoordinate orangeTarget = new BoardCoordinate(_pacman.getY() - 4, _pacman.getX(),
-                    true); // PINK TARGETS 3 SPACES LEFT 1 SPACE DOWN FROM PACMAN
-            BoardCoordinate orangeRoot = new BoardCoordinate(_orange.getY()/Constants.SQUARE_WIDTH,
-                    _orange.getX()/Constants.SQUARE_WIDTH, false);
+                    true); // ORANGE TARGETS 4 SPACES DOWN FROM PACMAN
+            this.moveAll(redRoot, pinkRoot, blueRoot, orangeRoot, redTarget, pinkTarget, blueTarget, orangeTarget);
+        }
 
-            _red.move(_red.bfs(redTarget, root, _map, GhostColor.RED), _red, _map, GhostColor.RED);
+        public void scatterMode(BoardCoordinate redRoot, BoardCoordinate pinkRoot, BoardCoordinate blueRoot, BoardCoordinate orangeRoot) {
+            BoardCoordinate redTarget = new BoardCoordinate(Constants.RED_CORNER_Y, Constants.RED_CORNER_X,
+                    true);
+            BoardCoordinate pinkTarget = new BoardCoordinate(Constants.PINK_CORNER_Y, Constants.PINK_CORNER_X,
+                    true);
+            BoardCoordinate blueTarget = new BoardCoordinate(Constants.BLUE_CORNER_Y, Constants.BLUE_CORNER_X,
+                    true);
+            BoardCoordinate orangeTarget = new BoardCoordinate(Constants.ORANGE_CORNER_Y, Constants.ORANGE_CORNER_X,
+                    true);
+            this.moveAll(redRoot, pinkRoot, blueRoot, orangeRoot, redTarget, pinkTarget, blueTarget, orangeTarget);
+        }
+
+        public void frightMode(BoardCoordinate redRoot, BoardCoordinate pinkRoot, BoardCoordinate blueRoot, BoardCoordinate orangeRoot) {
+            //_red.changeColor(_red, _frightMode);
+        }
+
+        public void moveAll(BoardCoordinate redRoot, BoardCoordinate pinkRoot, BoardCoordinate blueRoot, BoardCoordinate orangeRoot,
+                            BoardCoordinate redTarget, BoardCoordinate pinkTarget, BoardCoordinate blueTarget, BoardCoordinate orangeTarget) {
+            _red.move(_red.bfs(redTarget, redRoot, _map, GhostColor.RED), _red, _map, GhostColor.RED);
             _pink.move(_pink.bfs(pinkTarget, pinkRoot, _map, GhostColor.PINK), _pink, _map, GhostColor.PINK);
             _blue.move(_blue.bfs(blueTarget, blueRoot, _map, GhostColor.BLUE), _blue, _map, GhostColor.BLUE);
-            _orange.move(_orange.bfs(blueTarget, orangeRoot, _map, GhostColor.ORANGE), _orange, _map, GhostColor.ORANGE);
-        }
-
-        public void scatterMode() {
-            BoardCoordinate target = new BoardCoordinate(1, 1,
-                    true);
-            BoardCoordinate root = new BoardCoordinate(_red.getY()/Constants.SQUARE_WIDTH,
-                    _red.getX()/Constants.SQUARE_WIDTH, false);
-            _red.move(_red.bfs(target, root, _map, GhostColor.RED), _red, _map, GhostColor.RED);
-        }
-
-        public void frightMode() {
-            //_red.changeColor(_red, _frightMode);
+            _orange.move(_orange.bfs(orangeTarget, orangeRoot, _map, GhostColor.ORANGE), _orange, _map, GhostColor.ORANGE);
         }
     }
 
@@ -294,13 +299,30 @@ public class Game {
         }
     }
 
+    public void resetGame() {
+        for(int i=_ghostPen.size(); i>0; i--) {
+            _ghostPen.remove();
+        }
+        _red.setX(Constants.RED_START_X);
+        _red.setY(Constants.RED_START_Y);
+        _pink.setX(Constants.PINK_START_X);
+        _pink.setY(Constants.PINK_START_Y);
+        _ghostPen.add(_pink);
+        _blue.setX(Constants.BLUE_START_X);
+        _blue.setY(Constants.BLUE_START_Y);
+        _ghostPen.add(_blue);
+        _orange.setX(Constants.ORANGE_START_X);
+        _orange.setY(Constants.ORANGE_START_Y);
+        _ghostPen.add(_orange);
+        _pacman.setX(Constants.PACMAN_START_X);
+        _pacman.setY(Constants.PACMAN_START_Y);
+        _modeCounter = 0;
+        System.out.println("Game reset");
+    }
+
     public void addToPen(Ghost ghost, Pane gamePane) {
         _ghostPen.add(ghost);
         ghost.setX(11*Constants.SQUARE_WIDTH);
         ghost.setY(10*Constants.SQUARE_WIDTH);
-    }
-
-    public LinkedList<Ghost> getGhostPen() {
-        return _ghostPen;
     }
 }

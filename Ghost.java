@@ -30,10 +30,11 @@ public class Ghost implements Collidable {
     }
 
     public int collide(Pacman pacman, Pane gamePane, Game game) {
-        game.addToPen(this, gamePane);
         if(game.getFrightMode()) {
+            game.addToPen(this, gamePane);
             return 200;
         } else {
+            game.resetGame();
             pacman.subtractLife();
             return 0;
         }
@@ -70,6 +71,7 @@ public class Ghost implements Collidable {
 
     public void move(Direction direction, Ghost ghost, MazeSquare[][] map, GhostColor ghostColor) {
         map[ghost.getY()/Constants.SQUARE_WIDTH][ghost.getX()/Constants.SQUARE_WIDTH].getArrayList().remove(ghost);
+        //this.checkWrapping(ghost);
         switch(direction) {
             case LEFT:
                 if(ghost.getX()==1) {
@@ -77,6 +79,7 @@ public class Ghost implements Collidable {
                 } else {
                     ghost.setX(ghost.getX() - Constants.SQUARE_WIDTH);
                 }
+                //ghost.setX(ghost.getX() - Constants.SQUARE_WIDTH);
                 break;
             case RIGHT:
                 if(ghost.getX()==21*Constants.SQUARE_WIDTH) {
@@ -85,6 +88,7 @@ public class Ghost implements Collidable {
                 } else {
                     ghost.setX(ghost.getX() + Constants.SQUARE_WIDTH);
                 }
+                //ghost.setX(ghost.getX() + Constants.SQUARE_WIDTH);
                 break;
             case UP:
                 ghost.setY(ghost.getY() - Constants.SQUARE_WIDTH);
@@ -98,6 +102,14 @@ public class Ghost implements Collidable {
         map[ghost.getY()/Constants.SQUARE_WIDTH][ghost.getX()/Constants.SQUARE_WIDTH].getArrayList().add(ghost);
         this.setDirection(ghostColor, direction);
         //_direction = direction;
+    }
+
+    public void checkWrapping(Ghost ghost) {
+        if(ghost.getX()==0) {
+            ghost.setX(22*Constants.SQUARE_WIDTH);
+        } else if(ghost.getX()==21*Constants.SQUARE_WIDTH) {
+            ghost.setX(Constants.SQUARE_WIDTH);
+        }
     }
 
     public Direction bfs(BoardCoordinate target, BoardCoordinate root, MazeSquare[][] map, GhostColor ghostColor) {

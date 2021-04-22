@@ -26,6 +26,14 @@ public class Pacman {
         return (int)(_pacman.getCenterY() - Constants.OFFSET)/Constants.SQUARE_WIDTH;
     }
 
+    public void setX(int x) {
+        _pacman.setCenterX(x);
+    }
+
+    public void setY(int y) {
+        _pacman.setCenterY(y);
+    }
+
     public int getLives() {
         return _lives;
     }
