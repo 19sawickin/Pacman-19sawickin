@@ -29,9 +29,8 @@ public class Ghost implements Collidable {
         gamePane.getChildren().add(_ghost);
     }
 
-    public int collide(Ghost ghost, Pacman pacman, Pane gamePane, Game game) {
-        //ghostPen.add(ghost);
-        this.sendToPen(ghost, gamePane);
+    public int collide(Pacman pacman, Pane gamePane, Game game) {
+        game.addToPen(this, gamePane);
         if(game.getFrightMode()) {
             return 200;
         } else {
@@ -40,16 +39,9 @@ public class Ghost implements Collidable {
         }
     }
 
-    public void sendToPen(Ghost ghost, Pane gamePane) {
-        System.out.println("Sent to pen");
-        ghost.setX(11*Constants.SQUARE_WIDTH);
-        ghost.setY(10*Constants.SQUARE_WIDTH); // FREE SPACE IS 8
-        gamePane.getChildren().add(ghost.getNode());
-    }
-
     public void removeFromPen(Ghost ghost) {
         ghost.setX(11*Constants.SQUARE_WIDTH);
-        ghost.setY(10*Constants.SQUARE_WIDTH);
+        ghost.setY(8*Constants.SQUARE_WIDTH);
     }
 
     public Node getNode() {
@@ -74,10 +66,6 @@ public class Ghost implements Collidable {
 
     public void setY(int y) {
         _ghost.setY(y);
-    }
-
-    public void changeColor(Ghost ghost) {
-        _ghost.setFill(Color.BLUE);
     }
 
     public void move(Direction direction, Ghost ghost, MazeSquare[][] map, GhostColor ghostColor) {

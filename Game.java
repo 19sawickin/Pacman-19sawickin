@@ -35,12 +35,14 @@ public class Game {
     private int _score;
 
     private boolean _frightMode;
+    private int _frightModeCounter;
 
     public Game(Pane gamePane, HBox bottomPane) {
         SquareType map[][] = cs15.fnl.pacmanSupport.SupportMap.getSupportMap();
         _map = new MazeSquare[Constants.ROWS][Constants.COLUMNS];
         _gamePane = gamePane;
         _frightMode = false;
+        _frightModeCounter = 0;
         _ghostPen = new LinkedList<Ghost>();
         _futureX = 1;
         _futureY = 0;
@@ -118,7 +120,6 @@ public class Game {
             if(!_ghostPen.isEmpty()) {
                 _ghostPen.get(0).removeFromPen(_ghostPen.get(0));
                 _ghostPen.removeFirst();
-                //_red.removeFromPen(_red);
             }
         }
     }
@@ -126,9 +127,6 @@ public class Game {
     private class TimeHandler implements EventHandler<ActionEvent> {
 
         private int _modeCounter = 0;
-        private int _scatterCounter = 0;
-        private int _chaseCounter = 0;
-        private int _frightModeCounter = 0;
 
         public void handle(ActionEvent kf) {
             if(_pacman.getLives()!=0) {
@@ -146,9 +144,10 @@ public class Game {
         public void moveGhost() {
             if(_frightMode) {
                 //this.frightMode();
+                this.chaseMode();
                 _frightModeCounter++;
                 if(_frightModeCounter==7) {
-                    _frightMode = false;
+                    Game.this.setFrightMode(false);
                     _modeCounter = 0;
                     _frightModeCounter = 0;
                 }
@@ -157,6 +156,7 @@ public class Game {
                 _modeCounter++;
             } else if(_modeCounter < 27) {
                 //this.scatterMode();
+                this.chaseMode();
                 _modeCounter++;
             } else if(_modeCounter==27) {
                 _modeCounter = 0;
@@ -188,7 +188,6 @@ public class Game {
             _pink.move(_pink.bfs(pinkTarget, pinkRoot, _map, GhostColor.PINK), _pink, _map, GhostColor.PINK);
             _blue.move(_blue.bfs(blueTarget, blueRoot, _map, GhostColor.BLUE), _blue, _map, GhostColor.BLUE);
             _orange.move(_orange.bfs(blueTarget, orangeRoot, _map, GhostColor.ORANGE), _orange, _map, GhostColor.ORANGE);
-            _chaseCounter++;
         }
 
         public void scatterMode() {
@@ -197,7 +196,6 @@ public class Game {
             BoardCoordinate root = new BoardCoordinate(_red.getY()/Constants.SQUARE_WIDTH,
                     _red.getX()/Constants.SQUARE_WIDTH, false);
             _red.move(_red.bfs(target, root, _map, GhostColor.RED), _red, _map, GhostColor.RED);
-            _scatterCounter++;
         }
 
         public void frightMode() {
@@ -253,12 +251,9 @@ public class Game {
         if(!_map[i][j].getArrayList().isEmpty()) {
             for(int k=0; k<_map[i][j].getArrayList().size(); k++) {
                 Collidable object = _map[i][j].getArrayList().get(k);
-                collideReturn = object.collide(_red, _pacman, _gamePane, this);
+                collideReturn = object.collide(_pacman, _gamePane, this);
                 _score = _score + collideReturn; // _score = _score + object.collide(_red, _pacman, _ghostPen, _gamePane);
-                if(collideReturn==0 || collideReturn==200) { // basically if a ghost was collided with
-
-                }
-                _gamePane.getChildren().remove(object.getNode());
+                //_gamePane.getChildren().remove(object.getNode());
                 _map[i][j].getArrayList().remove(object);
             }
         }
@@ -291,6 +286,21 @@ public class Game {
             _pink.getGhost().setFill(Color.BLUE);
             _blue.getGhost().setFill(Color.BLUE);
             _orange.getGhost().setFill(Color.BLUE);
+        } else {
+            _red.getGhost().setFill(Color.RED);
+            _pink.getGhost().setFill(Color.PINK);
+            _blue.getGhost().setFill(Color.LIGHTBLUE);
+            _orange.getGhost().setFill(Color.ORANGE);
         }
+    }
+
+    public void addToPen(Ghost ghost, Pane gamePane) {
+        _ghostPen.add(ghost);
+        ghost.setX(11*Constants.SQUARE_WIDTH);
+        ghost.setY(10*Constants.SQUARE_WIDTH);
+    }
+
+    public LinkedList<Ghost> getGhostPen() {
+        return _ghostPen;
     }
 }

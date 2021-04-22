@@ -6,17 +6,11 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
-import java.util.LinkedList;
-
 public class Dot implements Collidable {
 
-    private Pane _gamePane;
-    private Label _label;
     private Circle _dot;
 
     public Dot(Pane gamePane, int i, int j) {
-        _gamePane = gamePane;
-        _label = new Label();
         _dot = new Circle(Constants.DOT_RADIUS);
         _dot.setCenterX(j*Constants.SQUARE_WIDTH + Constants.OFFSET);
         _dot.setCenterY(i*Constants.SQUARE_WIDTH + Constants.OFFSET);
@@ -24,7 +18,8 @@ public class Dot implements Collidable {
         gamePane.getChildren().add(_dot);
     }
 
-    public int collide(Ghost ghost, Pacman pacman, Pane gamePane, Game game) {
+    public int collide(Pacman pacman, Pane gamePane, Game game) {
+        gamePane.getChildren().remove(this);
         return 10;
     }
 

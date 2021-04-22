@@ -5,8 +5,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
-import java.util.LinkedList;
-
 public class Energizer implements Collidable{
 
     private Circle _energizer;
@@ -19,7 +17,8 @@ public class Energizer implements Collidable{
         gamePane.getChildren().add(_energizer);
     }
 
-    public int collide(Ghost ghost, Pacman pacman, Pane gamePane, Game game) {
+    public int collide(Pacman pacman, Pane gamePane, Game game) {
+        gamePane.getChildren().remove(this);
         game.setFrightMode(true);
         return 100;
     }
