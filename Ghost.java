@@ -137,22 +137,7 @@ public class Ghost implements Collidable {
                 break;
         }
         map[ghost.getY()/Constants.SQUARE_WIDTH][ghost.getX()/Constants.SQUARE_WIDTH].getArrayList().add(ghost);
-        switch(ghostColor) {
-            case RED:
-                _redDirection = direction;
-                break;
-            case PINK:
-                _pinkDirection = direction;
-                break;
-            case BLUE:
-                _blueDirection = direction;
-                break;
-            case ORANGE:
-                _orangeDirection = direction;
-                break;
-            default:
-                break;
-        }
+        this.setDirection(ghostColor, direction);
         //_direction = direction;
     }
 
@@ -163,8 +148,8 @@ public class Ghost implements Collidable {
         _firstRun = true;
         BoardCoordinate current = root;
         Direction direction = Direction.UP;
-        directionArray[root.getRow()][root.getColumn()] = _direction;
-        this.populateNeighbors(current, map, directionArray, Q);
+        directionArray[root.getRow()][root.getColumn()] = this.getDirection(ghostColor); // this.getDirection(ghostColor)
+        this.populateNeighbors(current, map, directionArray, Q, ghostColor);
         while(!Q.isEmpty()) {
             current = Q.removeFirst();
             if(_firstRun) {
@@ -176,30 +161,30 @@ public class Ghost implements Collidable {
                 closestSquare = current;
                 direction = directionArray[closestSquare.getRow()][closestSquare.getColumn()];
             }
-            this.visitNeighbors(current, map, directionArray, Q, direction);
+            this.visitNeighbors(current, map, directionArray, Q, ghostColor);
         }
         return direction;
     }
 
     public void populateNeighbors(BoardCoordinate current, MazeSquare[][] map,
-                          Direction[][] directionArray, LinkedList<BoardCoordinate> Q) {
-        this.checkNeighbors(0, -1, current, directionArray, map, Q, true,  Direction.LEFT); // LEFT
-        this.checkNeighbors(0, 1, current, directionArray, map, Q, true,  Direction.RIGHT); // RIGHT
-        this.checkNeighbors(-1, 0, current, directionArray, map, Q, true, Direction.UP); // UP
-        this.checkNeighbors(1, 0, current, directionArray, map, Q, true, Direction.DOWN); // DOWN
+                          Direction[][] directionArray, LinkedList<BoardCoordinate> Q, GhostColor ghostColor) {
+        this.checkNeighbors(0, -1, current, directionArray, map, Q, true,  Direction.LEFT, ghostColor); // LEFT
+        this.checkNeighbors(0, 1, current, directionArray, map, Q, true,  Direction.RIGHT, ghostColor); // RIGHT
+        this.checkNeighbors(-1, 0, current, directionArray, map, Q, true, Direction.UP, ghostColor); // UP
+        this.checkNeighbors(1, 0, current, directionArray, map, Q, true, Direction.DOWN, ghostColor); // DOWN
     }
 
     public void visitNeighbors(BoardCoordinate current, MazeSquare[][] map,
-                                  Direction[][] directionArray, LinkedList<BoardCoordinate> Q, Direction direction) {
-        this.checkNeighbors(0, -1, current, directionArray, map, Q, false, Direction.LEFT); // LEFT
-        this.checkNeighbors(0, 1, current, directionArray, map, Q, false, Direction.RIGHT); // RIGHT
-        this.checkNeighbors(-1, 0, current, directionArray, map, Q, false, Direction.UP); // UP
-        this.checkNeighbors(1, 0, current, directionArray, map, Q, false, Direction.DOWN); // DOWN
+                                  Direction[][] directionArray, LinkedList<BoardCoordinate> Q, GhostColor ghostColor) {
+        this.checkNeighbors(0, -1, current, directionArray, map, Q, false, Direction.LEFT, ghostColor); // LEFT
+        this.checkNeighbors(0, 1, current, directionArray, map, Q, false, Direction.RIGHT, ghostColor); // RIGHT
+        this.checkNeighbors(-1, 0, current, directionArray, map, Q, false, Direction.UP, ghostColor); // UP
+        this.checkNeighbors(1, 0, current, directionArray, map, Q, false, Direction.DOWN, ghostColor); // DOWN
     }
 
     public void checkNeighbors(int i, int j, BoardCoordinate current,
                                Direction[][] directionArray, MazeSquare[][] map,
-                               LinkedList<BoardCoordinate> Q, boolean first, Direction direction) {
+                               LinkedList<BoardCoordinate> Q, boolean first, Direction direction, GhostColor ghostColor) {
 
         if(current.getColumn()==22 && j==1) {
             j=-22;
@@ -209,7 +194,7 @@ public class Ghost implements Collidable {
         if(!first) {
             if (!map[current.getRow()+i][current.getColumn()+j].getIsAWall() &&
                     directionArray[current.getRow()+i][current.getColumn()+j]==null
-                    && this.getOpposite(direction)!=_direction) {
+                    && this.getOpposite(direction)!=this.getDirection(ghostColor)) { //_direction
 
                 directionArray[current.getRow()+i][current.getColumn()+j] =
                         directionArray[current.getRow()][current.getColumn()];
@@ -219,7 +204,7 @@ public class Ghost implements Collidable {
             }
         } else {
             if(!map[current.getRow()+i][current.getColumn()+j].getIsAWall()
-                    && this.getOpposite(direction)!=_direction) {
+                    && this.getOpposite(direction)!=this.getDirection(ghostColor)) { //_direction
                 switch(j) {
                     case -1:
                         directionArray[current.getRow()+i][current.getColumn()+j] =
@@ -274,5 +259,40 @@ public class Ghost implements Collidable {
                 break;
         }
         return direction;
+    }
+
+    public Direction getDirection(GhostColor ghostColor) {
+        Direction direction = Direction.UP;
+        switch(ghostColor) {
+            case RED:
+                return _redDirection;
+            case PINK:
+                return _pinkDirection;
+            case BLUE:
+                return _blueDirection;
+            case ORANGE:
+                return _orangeDirection;
+            default:
+                return _redDirection;
+        }
+    }
+
+    public void setDirection(GhostColor ghostColor, Direction direction) {
+        switch(ghostColor) {
+            case RED:
+                _redDirection = direction;
+                break;
+            case PINK:
+                _pinkDirection = direction;
+                break;
+            case BLUE:
+                _blueDirection = direction;
+                break;
+            case ORANGE:
+                _orangeDirection = direction;
+                break;
+            default:
+                break;
+        }
     }
 }

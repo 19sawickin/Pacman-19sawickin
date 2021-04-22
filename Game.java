@@ -147,7 +147,10 @@ public class Game {
                     true);
             BoardCoordinate root = new BoardCoordinate(_red.getY()/Constants.SQUARE_WIDTH,
                     _red.getX()/Constants.SQUARE_WIDTH, false);
+            BoardCoordinate pinkRoot = new BoardCoordinate(_pink.getY()/Constants.SQUARE_WIDTH,
+                    _pink.getX()/Constants.SQUARE_WIDTH, false);
             _red.move(_red.bfs(target, root, _map, GhostColor.RED), _red, _map, GhostColor.RED);
+            _pink.move(_pink.bfs(target, pinkRoot, _map, GhostColor.PINK), _pink, _map, GhostColor.PINK);
             _chaseCounter++;
         }
 
