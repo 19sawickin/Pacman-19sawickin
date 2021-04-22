@@ -34,11 +34,13 @@ public class Game {
     private int _futureY;
     private int _score;
 
+    private boolean _frightMode;
 
     public Game(Pane gamePane, HBox bottomPane) {
         SquareType map[][] = cs15.fnl.pacmanSupport.SupportMap.getSupportMap();
         _map = new MazeSquare[Constants.ROWS][Constants.COLUMNS];
         _gamePane = gamePane;
+        _frightMode = false;
         _ghostPen = new LinkedList<Ghost>();
         _futureX = 1;
         _futureY = 0;
@@ -114,16 +116,19 @@ public class Game {
 
         public void handle(ActionEvent kf) {
             if(!_ghostPen.isEmpty()) {
+                _ghostPen.get(0).removeFromPen(_ghostPen.get(0));
                 _ghostPen.removeFirst();
-                _red.removeFromPen(_red);
+                //_red.removeFromPen(_red);
             }
         }
     }
 
     private class TimeHandler implements EventHandler<ActionEvent> {
 
+        private int _modeCounter = 0;
         private int _scatterCounter = 0;
         private int _chaseCounter = 0;
+        private int _frightModeCounter = 0;
 
         public void handle(ActionEvent kf) {
             if(_pacman.getLives()!=0) {
@@ -139,7 +144,23 @@ public class Game {
         }
 
         public void moveGhost() {
-            this.chaseMode();
+            if(_frightMode) {
+                //this.frightMode();
+                _frightModeCounter++;
+                if(_frightModeCounter==7) {
+                    _frightMode = false;
+                    _modeCounter = 0;
+                    _frightModeCounter = 0;
+                }
+            } else if(_modeCounter < 20) {
+                this.chaseMode();
+                _modeCounter++;
+            } else if(_modeCounter < 27) {
+                //this.scatterMode();
+                _modeCounter++;
+            } else if(_modeCounter==27) {
+                _modeCounter = 0;
+            }
         }
 
         public void chaseMode() {
@@ -228,10 +249,15 @@ public class Game {
     public void checkSquare() {
         int j = _pacman.getX();
         int i = _pacman.getY();
+        int collideReturn = 0;
         if(!_map[i][j].getArrayList().isEmpty()) {
             for(int k=0; k<_map[i][j].getArrayList().size(); k++) {
                 Collidable object = _map[i][j].getArrayList().get(k);
-                _score = _score + object.collide(_red, _pacman, _ghostPen, _gamePane);
+                collideReturn = object.collide(_red, _pacman, _gamePane, this);
+                _score = _score + collideReturn; // _score = _score + object.collide(_red, _pacman, _ghostPen, _gamePane);
+                if(collideReturn==0 || collideReturn==200) { // basically if a ghost was collided with
+
+                }
                 _gamePane.getChildren().remove(object.getNode());
                 _map[i][j].getArrayList().remove(object);
             }
@@ -252,5 +278,19 @@ public class Game {
     public void updateScore() {
         _scoreLabel.setText("Score: " + _score);
         _livesLabel.setText("Lives: " + _pacman.getLives());
+    }
+
+    public boolean getFrightMode() {
+        return _frightMode;
+    }
+
+    public void setFrightMode(Boolean fright) {
+        _frightMode = fright;
+        if(_frightMode) {
+            _red.getGhost().setFill(Color.BLUE);
+            _pink.getGhost().setFill(Color.BLUE);
+            _blue.getGhost().setFill(Color.BLUE);
+            _orange.getGhost().setFill(Color.BLUE);
+        }
     }
 }

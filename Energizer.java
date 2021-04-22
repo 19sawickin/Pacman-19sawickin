@@ -19,9 +19,8 @@ public class Energizer implements Collidable{
         gamePane.getChildren().add(_energizer);
     }
 
-    public int collide(Ghost ghost, Pacman pacman, LinkedList<Ghost> ghostPen, Pane gamePane) {
-        ghost.setFrightMode(true);
-        ghost.changeColor(ghost, true);
+    public int collide(Ghost ghost, Pacman pacman, Pane gamePane, Game game) {
+        game.setFrightMode(true);
         return 100;
     }
 

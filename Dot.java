@@ -24,7 +24,7 @@ public class Dot implements Collidable {
         gamePane.getChildren().add(_dot);
     }
 
-    public int collide(Ghost ghost, Pacman pacman, LinkedList<Ghost> ghostPen, Pane gamePane) {
+    public int collide(Ghost ghost, Pacman pacman, Pane gamePane, Game game) {
         return 10;
     }
 

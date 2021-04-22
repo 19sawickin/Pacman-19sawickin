@@ -15,15 +15,9 @@ public class Ghost implements Collidable {
     private Direction _orangeDirection;
     private Boolean _firstRun;
 
-    private boolean _frightMode;
-    private boolean _chaseMode;
-    private boolean _scatterMode;
-
     public Ghost(Pane gamePane, int i, int j, Color color, int xOffset, int yOffset) {
         _firstRun = true;
-        _frightMode = false;
-        _chaseMode = true;
-        _scatterMode = false;
+
         _redDirection = Direction.UP;
         _pinkDirection = Direction.UP;
         _blueDirection = Direction.UP;
@@ -35,11 +29,10 @@ public class Ghost implements Collidable {
         gamePane.getChildren().add(_ghost);
     }
 
-    public int collide(Ghost ghost, Pacman pacman, LinkedList<Ghost> ghostPen, Pane gamePane) {
-        ghostPen.add(ghost);
+    public int collide(Ghost ghost, Pacman pacman, Pane gamePane, Game game) {
+        //ghostPen.add(ghost);
         this.sendToPen(ghost, gamePane);
-        System.out.println(ghostPen);
-        if(_frightMode) {
+        if(game.getFrightMode()) {
             return 200;
         } else {
             pacman.subtractLife();
@@ -59,31 +52,11 @@ public class Ghost implements Collidable {
         ghost.setY(10*Constants.SQUARE_WIDTH);
     }
 
-    public boolean getFrightMode() {
-        return _frightMode;
-    }
-
-    public boolean getChaseMode() {
-        return _chaseMode;
-    }
-
-    public boolean getScatterMode() {
-        return _scatterMode;
-    }
-
-    public void setFrightMode(Boolean fright) {
-        _frightMode = fright;
-    }
-
-    public void setChaseMode(Boolean chase) {
-        _chaseMode = chase;
-    }
-
-    public void setScatterMode(Boolean scatter) {
-        _scatterMode = scatter;
-    }
-
     public Node getNode() {
+        return _ghost;
+    }
+
+    public Rectangle getGhost() {
         return _ghost;
     }
 
@@ -103,10 +76,8 @@ public class Ghost implements Collidable {
         _ghost.setY(y);
     }
 
-    public void changeColor(Ghost ghost, Boolean frightMode) {
-        if(_frightMode) {
-            _ghost.setFill(Color.BLUE);
-        }
+    public void changeColor(Ghost ghost) {
+        _ghost.setFill(Color.BLUE);
     }
 
     public void move(Direction direction, Ghost ghost, MazeSquare[][] map, GhostColor ghostColor) {
@@ -262,7 +233,7 @@ public class Ghost implements Collidable {
     }
 
     public Direction getDirection(GhostColor ghostColor) {
-        Direction direction = Direction.UP;
+        //Direction direction = Direction.UP;
         switch(ghostColor) {
             case RED:
                 return _redDirection;
