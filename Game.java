@@ -143,14 +143,30 @@ public class Game {
         }
 
         public void chaseMode() {
-            BoardCoordinate target = new BoardCoordinate(_pacman.getY(), _pacman.getX(),
-                    true);
+            BoardCoordinate redTarget = new BoardCoordinate(_pacman.getY(), _pacman.getX(),
+                    true); // TARGET IS PACMAN
             BoardCoordinate root = new BoardCoordinate(_red.getY()/Constants.SQUARE_WIDTH,
-                    _red.getX()/Constants.SQUARE_WIDTH, false);
+                    _red.getX()/Constants.SQUARE_WIDTH, false); // RED'S TARGET
+
+            BoardCoordinate pinkTarget = new BoardCoordinate(_pacman.getY() + 1, _pacman.getX() - 3,
+                    true); // PINK TARGETS 3 SPACES LEFT 1 SPACE DOWN FROM PACMAN
             BoardCoordinate pinkRoot = new BoardCoordinate(_pink.getY()/Constants.SQUARE_WIDTH,
                     _pink.getX()/Constants.SQUARE_WIDTH, false);
-            _red.move(_red.bfs(target, root, _map, GhostColor.RED), _red, _map, GhostColor.RED);
-            _pink.move(_pink.bfs(target, pinkRoot, _map, GhostColor.PINK), _pink, _map, GhostColor.PINK);
+
+            BoardCoordinate blueTarget = new BoardCoordinate(_pacman.getY(), _pacman.getX() + 2,
+                    true); // PINK TARGETS 3 SPACES LEFT 1 SPACE DOWN FROM PACMAN
+            BoardCoordinate blueRoot = new BoardCoordinate(_blue.getY()/Constants.SQUARE_WIDTH,
+                    _blue.getX()/Constants.SQUARE_WIDTH, false);
+
+            BoardCoordinate orangeTarget = new BoardCoordinate(_pacman.getY() - 4, _pacman.getX(),
+                    true); // PINK TARGETS 3 SPACES LEFT 1 SPACE DOWN FROM PACMAN
+            BoardCoordinate orangeRoot = new BoardCoordinate(_orange.getY()/Constants.SQUARE_WIDTH,
+                    _orange.getX()/Constants.SQUARE_WIDTH, false);
+
+            _red.move(_red.bfs(redTarget, root, _map, GhostColor.RED), _red, _map, GhostColor.RED);
+            _pink.move(_pink.bfs(pinkTarget, pinkRoot, _map, GhostColor.PINK), _pink, _map, GhostColor.PINK);
+            _blue.move(_blue.bfs(blueTarget, blueRoot, _map, GhostColor.BLUE), _blue, _map, GhostColor.BLUE);
+            _orange.move(_orange.bfs(blueTarget, orangeRoot, _map, GhostColor.ORANGE), _orange, _map, GhostColor.ORANGE);
             _chaseCounter++;
         }
 
