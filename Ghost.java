@@ -9,21 +9,25 @@ import java.util.LinkedList;
 public class Ghost implements Collidable {
 
     private Rectangle _ghost;
-    private Direction _direction;
+    private Direction _redDirection;
+    private Direction _pinkDirection;
+    private Direction _blueDirection;
+    private Direction _orangeDirection;
     private Boolean _firstRun;
-    private MazeSquare[][] _map;
 
     private boolean _frightMode;
     private boolean _chaseMode;
     private boolean _scatterMode;
 
-    public Ghost(Pane gamePane, int i, int j, Color color, int xOffset, int yOffset, MazeSquare[][] map) {
-        _map = map;
+    public Ghost(Pane gamePane, int i, int j, Color color, int xOffset, int yOffset) {
         _firstRun = true;
         _frightMode = false;
         _chaseMode = true;
         _scatterMode = false;
-        _direction = Direction.UP;
+        _redDirection = Direction.UP;
+        _pinkDirection = Direction.UP;
+        _blueDirection = Direction.UP;
+        _orangeDirection = Direction.UP;
         _ghost = new Rectangle(Constants.SQUARE_WIDTH, Constants.SQUARE_WIDTH);
         _ghost.setX(j*Constants.SQUARE_WIDTH + xOffset*Constants.SQUARE_WIDTH);
         _ghost.setY(i*Constants.SQUARE_WIDTH + yOffset*Constants.SQUARE_WIDTH);
@@ -31,9 +35,28 @@ public class Ghost implements Collidable {
         gamePane.getChildren().add(_ghost);
     }
 
-    public int collide() {
-        System.out.println("Ghost Collision");
-        return 200;
+    public int collide(Ghost ghost, Pacman pacman, LinkedList<Ghost> ghostPen, Pane gamePane) {
+        ghostPen.add(ghost);
+        this.sendToPen(ghost, gamePane);
+        System.out.println(ghostPen);
+        if(_frightMode) {
+            return 200;
+        } else {
+            pacman.subtractLife();
+            return 0;
+        }
+    }
+
+    public void sendToPen(Ghost ghost, Pane gamePane) {
+        System.out.println("Sent to pen");
+        ghost.setX(11*Constants.SQUARE_WIDTH);
+        ghost.setY(10*Constants.SQUARE_WIDTH); // FREE SPACE IS 8
+        gamePane.getChildren().add(ghost.getNode());
+    }
+
+    public void removeFromPen(Ghost ghost) {
+        ghost.setX(11*Constants.SQUARE_WIDTH);
+        ghost.setY(10*Constants.SQUARE_WIDTH);
     }
 
     public boolean getFrightMode() {
@@ -81,11 +104,13 @@ public class Ghost implements Collidable {
     }
 
     public void changeColor(Ghost ghost, Boolean frightMode) {
-
+        if(_frightMode) {
+            _ghost.setFill(Color.BLUE);
+        }
     }
 
-    public void move(Direction direction, Ghost ghost) {
-        _map[ghost.getY()/Constants.SQUARE_WIDTH][ghost.getX()/Constants.SQUARE_WIDTH].getArrayList().remove(ghost);
+    public void move(Direction direction, Ghost ghost, MazeSquare[][] map, GhostColor ghostColor) {
+        map[ghost.getY()/Constants.SQUARE_WIDTH][ghost.getX()/Constants.SQUARE_WIDTH].getArrayList().remove(ghost);
         switch(direction) {
             case LEFT:
                 if(ghost.getX()==1) {
@@ -111,11 +136,27 @@ public class Ghost implements Collidable {
             default:
                 break;
         }
-        _map[ghost.getY()/Constants.SQUARE_WIDTH][ghost.getX()/Constants.SQUARE_WIDTH].getArrayList().add(ghost);
-        _direction = direction;
+        map[ghost.getY()/Constants.SQUARE_WIDTH][ghost.getX()/Constants.SQUARE_WIDTH].getArrayList().add(ghost);
+        switch(ghostColor) {
+            case RED:
+                _redDirection = direction;
+                break;
+            case PINK:
+                _pinkDirection = direction;
+                break;
+            case BLUE:
+                _blueDirection = direction;
+                break;
+            case ORANGE:
+                _orangeDirection = direction;
+                break;
+            default:
+                break;
+        }
+        //_direction = direction;
     }
 
-    public Direction bfs(BoardCoordinate target, BoardCoordinate root, MazeSquare[][] map) {
+    public Direction bfs(BoardCoordinate target, BoardCoordinate root, MazeSquare[][] map, GhostColor ghostColor) {
         LinkedList<BoardCoordinate> Q = new LinkedList();
         Direction[][] directionArray = new Direction[Constants.ROWS][Constants.COLUMNS];
         BoardCoordinate closestSquare = root; // SET ORIGINAL DISTANCE TO BE REALLY LARGE SO IT GOES INTO THE IF STATEMENT

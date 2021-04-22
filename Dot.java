@@ -6,6 +6,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
+import java.util.LinkedList;
+
 public class Dot implements Collidable {
 
     private Pane _gamePane;
@@ -22,7 +24,7 @@ public class Dot implements Collidable {
         gamePane.getChildren().add(_dot);
     }
 
-    public int collide() {
+    public int collide(Ghost ghost, Pacman pacman, LinkedList<Ghost> ghostPen, Pane gamePane) {
         return 10;
     }
 

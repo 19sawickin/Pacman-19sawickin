@@ -7,6 +7,7 @@ import javafx.scene.shape.Circle;
 public class Pacman {
 
     private Circle _pacman;
+    private int _lives;
 
     public Pacman(Pane gamePane, int i, int j) {
         _pacman = new Circle(Constants.PACMAN_RADIUS);
@@ -14,6 +15,7 @@ public class Pacman {
         _pacman.setCenterY(i*Constants.SQUARE_WIDTH + Constants.OFFSET);
         _pacman.setFill(Color.YELLOW);
         gamePane.getChildren().add(_pacman);
+        _lives = 3;
     }
 
     public int getX() {
@@ -22,6 +24,14 @@ public class Pacman {
 
     public int getY() {
         return (int)(_pacman.getCenterY() - Constants.OFFSET)/Constants.SQUARE_WIDTH;
+    }
+
+    public int getLives() {
+        return _lives;
+    }
+
+    public int subtractLife() {
+        return _lives--;
     }
 
     public void move(Direction direction, Pacman pacman) {

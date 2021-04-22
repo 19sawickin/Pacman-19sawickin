@@ -6,19 +6,24 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import javafx.scene.input.KeyEvent;
 
+import java.util.LinkedList;
+
 public class Game {
 
     private Pane _gamePane;
     private Label _scoreLabel;
+    private Label _livesLabel;
     private MazeSquare[][] _map;
     private Timeline _timeline;
     private Timeline _ghostTimeline;
+    private LinkedList<Ghost> _ghostPen;
     private Pacman _pacman;
     private Ghost _red;
     private Ghost _blue;
@@ -30,11 +35,11 @@ public class Game {
     private int _score;
 
 
-
     public Game(Pane gamePane, HBox bottomPane) {
         SquareType map[][] = cs15.fnl.pacmanSupport.SupportMap.getSupportMap();
         _map = new MazeSquare[Constants.ROWS][Constants.COLUMNS];
         _gamePane = gamePane;
+        _ghostPen = new LinkedList<Ghost>();
         _futureX = 1;
         _futureY = 0;
         _direction = Direction.RIGHT;
@@ -75,12 +80,16 @@ public class Game {
                         _pacman = new Pacman(gamePane, i, j);
                         break;
                     case GHOST_START_LOCATION:
-                        _red = new Ghost(gamePane, i, j, Color.RED, 0, -2, _map);
+                        _red = new Ghost(gamePane, i, j, Color.RED, 0, -2);
                         _map[i][j].getArrayList().add(_red);
 
-                        _pink = new Ghost(gamePane, i, j, Color.PINK, -1, 0, _map);
-                        _blue = new Ghost(gamePane, i, j, Color.LIGHTBLUE, 0, 0, _map);
-                        _orange = new Ghost(gamePane, i, j, Color.ORANGE, 1, 0, _map);
+                        _pink = new Ghost(gamePane, i, j, Color.PINK, -1, 0);
+                        _ghostPen.add(_pink);
+                        _blue = new Ghost(gamePane, i, j, Color.LIGHTBLUE, 0, 0);
+                        _ghostPen.add(_blue);
+                        _orange = new Ghost(gamePane, i, j, Color.ORANGE, 1, 0);
+                        _ghostPen.add(_orange);
+
                     default:
                         break;
                 }
@@ -93,7 +102,7 @@ public class Game {
                 (new KeyFrame(Duration.seconds(Constants.DURATION),
                         new TimeHandler()));
         _ghostTimeline = new Timeline
-                (new KeyFrame(Duration.seconds(Constants.DURATION),
+                (new KeyFrame(Duration.seconds(Constants.GHOST_DURATION),
                         new GhostTimeHandler()));
         _timeline.setCycleCount(Animation.INDEFINITE);
         _ghostTimeline.setCycleCount(Animation.INDEFINITE);
@@ -101,39 +110,32 @@ public class Game {
         _ghostTimeline.play();
     }
 
-    private class TimeHandler implements EventHandler<ActionEvent> {
+    private class GhostTimeHandler implements EventHandler<ActionEvent> {
 
         public void handle(ActionEvent kf) {
-//            if(checkValidity(_futureX, _futureY)) {
-//                _pacman.move(_direction, _pacman);
-//                Game.this.checkSquare();
-//            }
+            if(!_ghostPen.isEmpty()) {
+                _ghostPen.removeFirst();
+                _red.removeFromPen(_red);
+            }
         }
     }
 
-    private class GhostTimeHandler implements EventHandler<ActionEvent> {
+    private class TimeHandler implements EventHandler<ActionEvent> {
 
         private int _scatterCounter = 0;
         private int _chaseCounter = 0;
 
         public void handle(ActionEvent kf) {
-            if(checkValidity(_futureX, _futureY)) {
-                _pacman.move(_direction, _pacman);
+            if(_pacman.getLives()!=0) {
+                if(checkValidity(_futureX, _futureY)) {
+                    _pacman.move(_direction, _pacman);
+                }
+                Game.this.checkSquare();
+                this.moveGhost();
+                Game.this.checkSquare();
+            } else {
+                _ghostTimeline.stop();
             }
-            Game.this.checkSquare();
-            this.moveGhost();
-            Game.this.checkSquare();
-
-
-//            if(_chaseCounter<20.1) {
-//                this.chaseMode();
-//            } else if(_scatterCounter<7.1) {
-//                this.scatterMode();
-//                if(_scatterCounter==7) {
-//                    _chaseCounter=0;
-//                    _scatterCounter=0;
-//                }
-//            }
         }
 
         public void moveGhost() {
@@ -145,7 +147,7 @@ public class Game {
                     true);
             BoardCoordinate root = new BoardCoordinate(_red.getY()/Constants.SQUARE_WIDTH,
                     _red.getX()/Constants.SQUARE_WIDTH, false);
-            _red.move(_red.bfs(target, root, _map), _red);
+            _red.move(_red.bfs(target, root, _map, GhostColor.RED), _red, _map, GhostColor.RED);
             _chaseCounter++;
         }
 
@@ -154,7 +156,7 @@ public class Game {
                     true);
             BoardCoordinate root = new BoardCoordinate(_red.getY()/Constants.SQUARE_WIDTH,
                     _red.getX()/Constants.SQUARE_WIDTH, false);
-            _red.move(_red.bfs(target, root, _map), _red);
+            _red.move(_red.bfs(target, root, _map, GhostColor.RED), _red, _map, GhostColor.RED);
             _scatterCounter++;
         }
 
@@ -210,7 +212,7 @@ public class Game {
         if(!_map[i][j].getArrayList().isEmpty()) {
             for(int k=0; k<_map[i][j].getArrayList().size(); k++) {
                 Collidable object = _map[i][j].getArrayList().get(k);
-                _score = _score + object.collide();
+                _score = _score + object.collide(_red, _pacman, _ghostPen, _gamePane);
                 _gamePane.getChildren().remove(object.getNode());
                 _map[i][j].getArrayList().remove(object);
             }
@@ -221,11 +223,15 @@ public class Game {
     public void setupScore(HBox bottomPane) {
         _score = 0;
         _scoreLabel = new Label("Score: " + _score);
+        _livesLabel = new Label("Lives " + _pacman.getLives());
         _scoreLabel.setTextFill(Color.WHITE);
-        bottomPane.getChildren().add(_scoreLabel);
+        _livesLabel.setTextFill(Color.WHITE);
+        _livesLabel.setAlignment(Pos.BASELINE_CENTER);
+        bottomPane.getChildren().addAll(_scoreLabel, _livesLabel);
     }
 
     public void updateScore() {
         _scoreLabel.setText("Score: " + _score);
+        _livesLabel.setText("Lives: " + _pacman.getLives());
     }
 }
