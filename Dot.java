@@ -1,7 +1,6 @@
 package pacman;
 
 import javafx.scene.*;
-import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;

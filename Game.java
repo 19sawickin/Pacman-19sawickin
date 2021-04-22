@@ -252,12 +252,10 @@ public class Game {
     public void checkSquare() {
         int j = _pacman.getX();
         int i = _pacman.getY();
-        int collideReturn = 0;
         if(!_map[i][j].getArrayList().isEmpty()) {
             for(int k=0; k<_map[i][j].getArrayList().size(); k++) {
                 Collidable object = _map[i][j].getArrayList().get(k);
-                collideReturn = object.collide(_pacman, _gamePane, this);
-                _score = _score + collideReturn; // _score = _score + object.collide(_red, _pacman, _ghostPen, _gamePane);
+                _score = _score + object.collide(_pacman, _gamePane, this);; // _score = _score + object.collide(_red, _pacman, _ghostPen, _gamePane);
                 //_gamePane.getChildren().remove(object.getNode());
                 _map[i][j].getArrayList().remove(object);
             }

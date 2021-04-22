@@ -16,7 +16,7 @@ public class Constants {
 
     public static final int PACMAN_RADIUS = SQUARE_WIDTH/2;
     public static final int PACMAN_START_X = 11*Constants.SQUARE_WIDTH + OFFSET;
-    public static final int PACMAN_START_Y = 20*Constants.SQUARE_WIDTH + OFFSET;
+    public static final int PACMAN_START_Y = 17*Constants.SQUARE_WIDTH + OFFSET;
 
     public static final int RED_CORNER_X = Constants.SQUARE_WIDTH;
     public static final int RED_CORNER_Y = Constants.SQUARE_WIDTH;
