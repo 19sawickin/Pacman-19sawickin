@@ -45,15 +45,15 @@ public class Pacman {
     public void move(Direction direction, Pacman pacman) {
         switch(direction) {
             case LEFT:
-                if(pacman.getX()==1) {
-                    _pacman.setCenterX(21*Constants.SQUARE_WIDTH + Constants.OFFSET);
+                if(pacman.getX()==0) {
+                    _pacman.setCenterX(22*Constants.SQUARE_WIDTH + Constants.OFFSET);
                 } else {
                     _pacman.setCenterX(_pacman.getCenterX() + -1*Constants.SQUARE_WIDTH);
                 }
                 break;
             case RIGHT:
-                if(pacman.getX()==21) {
-                    _pacman.setCenterX(Constants.OFFSET);
+                if(pacman.getX()==22) {
+                    _pacman.setCenterX(0);
                 } else {
                     _pacman.setCenterX(_pacman.getCenterX() + Constants.SQUARE_WIDTH);
                 }

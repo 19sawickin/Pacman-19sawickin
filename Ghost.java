@@ -40,7 +40,8 @@ public class Ghost implements Collidable {
         }
     }
 
-    public void removeFromPen(Ghost ghost) {
+    public void removeFromPen(Ghost ghost, MazeSquare[][] map) {
+        map[11][8].getArrayList().add(ghost);
         ghost.setX(11*Constants.SQUARE_WIDTH);
         ghost.setY(8*Constants.SQUARE_WIDTH);
     }
@@ -74,7 +75,7 @@ public class Ghost implements Collidable {
         //this.checkWrapping(ghost);
         switch(direction) {
             case LEFT:
-                if(ghost.getX()==1) {
+                if(ghost.getX()==0) { // 1 22*Constants.SQUARE_WIDTH
                     ghost.setX(22*Constants.SQUARE_WIDTH);
                 } else {
                     ghost.setX(ghost.getX() - Constants.SQUARE_WIDTH);
@@ -82,7 +83,7 @@ public class Ghost implements Collidable {
                 //ghost.setX(ghost.getX() - Constants.SQUARE_WIDTH);
                 break;
             case RIGHT:
-                if(ghost.getX()==21*Constants.SQUARE_WIDTH) {
+                if(ghost.getX()==22*Constants.SQUARE_WIDTH) { //21*Constants.SQUARE_WIDTH
                     System.out.println("Right side");
                     ghost.setX(0);
                 } else {
@@ -178,10 +179,12 @@ public class Ghost implements Collidable {
                     && this.getOpposite(direction)!=this.getDirection(ghostColor)) { //_direction
                 switch(j) {
                     case -1:
+                    case 22:
                         directionArray[current.getRow()+i][current.getColumn()+j] =
                                 Direction.LEFT;
                         break;
                     case 1:
+                    case -22:
                         directionArray[current.getRow()+i][current.getColumn()+j] =
                                 Direction.RIGHT;
                         break;

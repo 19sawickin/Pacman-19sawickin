@@ -13,6 +13,7 @@ import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import javafx.scene.input.KeyEvent;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class Game {
@@ -120,7 +121,7 @@ public class Game {
 
         public void handle(ActionEvent kf) {
             if(!_ghostPen.isEmpty()) {
-                _ghostPen.get(0).removeFromPen(_ghostPen.get(0));
+                _ghostPen.get(0).removeFromPen(_ghostPen.get(0), _map);
                 _ghostPen.removeFirst();
             }
         }
@@ -154,15 +155,15 @@ public class Game {
                 //this.frightMode(redRoot, pinkRoot, blueRoot, orangeRoot);
                 this.chaseMode(redRoot, pinkRoot, blueRoot, orangeRoot);
                 _frightModeCounter++;
-                if(_frightModeCounter==15) {
+                if(_frightModeCounter==7/Constants.DURATION) {
                     Game.this.setFrightMode(false);
                     _modeCounter = 0;
                     _frightModeCounter = 0;
                 }
-            } else if(_modeCounter < 20) {
+            } else if(_modeCounter < 20/Constants.DURATION) {
                 this.chaseMode(redRoot, pinkRoot, blueRoot, orangeRoot);
                 _modeCounter++;
-            } else if(_modeCounter < 27) {
+            } else if(_modeCounter < 27/Constants.DURATION) {
                 this.scatterMode(redRoot, pinkRoot, blueRoot, orangeRoot);
                 //this.chaseMode(redRoot, pinkRoot, blueRoot, orangeRoot);
                 _modeCounter++;
@@ -197,6 +198,12 @@ public class Game {
 
         public void frightMode(BoardCoordinate redRoot, BoardCoordinate pinkRoot, BoardCoordinate blueRoot, BoardCoordinate orangeRoot) {
             //_red.changeColor(_red, _frightMode);
+            _red.move(Game.this.generateDirection(_red, GhostColor.RED), _red, _map, GhostColor.RED);
+            _pink.move(Game.this.generateDirection(_pink, GhostColor.PINK), _pink, _map, GhostColor.PINK);
+            _blue.move(Game.this.generateDirection(_blue, GhostColor.BLUE), _blue, _map, GhostColor.BLUE);
+            _orange.move(Game.this.generateDirection(_orange, GhostColor.ORANGE), _orange, _map, GhostColor.ORANGE);
+            Direction direction = Direction.UP;
+
         }
 
         public void moveAll(BoardCoordinate redRoot, BoardCoordinate pinkRoot, BoardCoordinate blueRoot, BoardCoordinate orangeRoot,
@@ -240,6 +247,9 @@ public class Game {
     }
 
     public boolean checkValidity(int futureX, int futureY) {
+        if(_pacman.getX()==0 || _pacman.getX()==22) {
+            return true;
+        }
         if(_map[_pacman.getY() + futureY][_pacman.getX() + futureX].getIsAWall()) {
             return false;
         } else {
@@ -294,6 +304,37 @@ public class Game {
             _pink.getGhost().setFill(Color.PINK);
             _blue.getGhost().setFill(Color.LIGHTBLUE);
             _orange.getGhost().setFill(Color.ORANGE);
+        }
+    }
+
+    public Direction generateDirection(Ghost ghost, GhostColor ghostColor) {
+        ArrayList<Direction> directionArray = new ArrayList();
+        this.checkNeighbors(0,-1, ghost, ghostColor, directionArray);
+        this.checkNeighbors(0, 1, ghost, ghostColor, directionArray);
+        this.checkNeighbors(-1, 0, ghost, ghostColor, directionArray);
+        this.checkNeighbors(1, 0, ghost, ghostColor, directionArray);
+
+        int i = (int)(Math.random()*directionArray.size());
+        Direction direction = directionArray.get(i);
+        return direction;
+    }
+
+    public void checkNeighbors(int row, int col, Ghost ghost, GhostColor ghostColor, ArrayList<Direction> directionArray) {
+        Direction direction = Direction.UP;
+        if(!_map[ghost.getY()/Constants.SQUARE_WIDTH + row]
+                [ghost.getX()/Constants.SQUARE_WIDTH + col].getIsAWall()) {
+            if(col==-1) {
+                direction = Direction.LEFT;
+            } else if(col==1) {
+                direction = Direction.RIGHT;
+            } else if(row==-1) {
+                direction = Direction.DOWN;
+            } else if(row==1) {
+                direction = Direction.UP;
+            }
+            if(direction != ghost.getOpposite(ghost.getDirection(ghostColor))) {
+                directionArray.add(direction);
+            }
         }
     }
 
