@@ -6,6 +6,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import java.util.LinkedList;
 
+/**
+ * The Ghost class contains a lot of the game logic in the bfs method which is responsible for
+ * controlling the direction that ghosts move in during chase and scatter mode.
+ */
 public class Ghost implements Collidable {
 
     private Rectangle _ghost;
@@ -15,6 +19,10 @@ public class Ghost implements Collidable {
     private Direction _orangeDirection;
     private Boolean _firstRun;
 
+    /**
+     * Each time a ghost is constructed, its direction variable is set to up, subject
+     * to change once bfs is run.
+     */
     public Ghost(Pane gamePane, int i, int j, Color color, int xOffset, int yOffset) {
         _firstRun = true;
         _redDirection = Direction.UP;
@@ -28,6 +36,12 @@ public class Ghost implements Collidable {
         gamePane.getChildren().add(_ghost);
     }
 
+    /**
+     * The collide method is responsible for handling what happens when pacman collides with a ghost.
+     * If the game is in fright mode, the score will increase by 200 points and the ghost will be
+     * added back to the ghost pen. But if the game is in chase or scatter mode (i.e. not in fright mode)
+     * then the game resets everyone back to their initial positions and pacman loses a life.
+     */
     public int collide(Pacman pacman, Pane gamePane, Game game) {
         if(game.getFrightMode()) {
             game.addToPen(this);
@@ -39,6 +53,10 @@ public class Ghost implements Collidable {
         }
     }
 
+    /**
+     * This method graphically removes the ghosts from the ghost pen and adds them to the
+     * array list of the square right outside of the ghost pen.
+     */
     public void removeFromPen(Ghost ghost, MazeSquare[][] map) {
         map[11][8].getArrayList().add(ghost);
         ghost.setX(11*Constants.SQUARE_WIDTH);
@@ -69,6 +87,12 @@ public class Ghost implements Collidable {
         _ghost.setY(y);
     }
 
+    /**
+     * The move method checks to see if the ghost is at column 0 or 22 and wraps the ghost if
+     * it is. This method also takes in the direction from bfs which dictates what direction
+     * the ghost is to be moved in. Notable, the ghost is removed from the square's array list
+     * then added back to the new square's array list at the end of this method.
+     */
     public void move(Direction direction, Ghost ghost, MazeSquare[][] map, GhostColor ghostColor) {
         map[ghost.getY()/Constants.SQUARE_WIDTH][ghost.getX()/Constants.SQUARE_WIDTH].getArrayList().remove(ghost);
         switch(direction) {
@@ -81,7 +105,6 @@ public class Ghost implements Collidable {
                 break;
             case RIGHT:
                 if(ghost.getX()==22*Constants.SQUARE_WIDTH) {
-                    System.out.println("Right side");
                     ghost.setX(0);
                 } else {
                     ghost.setX(ghost.getX() + Constants.SQUARE_WIDTH);
@@ -100,10 +123,16 @@ public class Ghost implements Collidable {
         this.setDirection(ghostColor, direction);
     }
 
+    /**
+     * The bfs method takes in a target and a root and uses these board coordinates to find the quickest
+     * route from the root to the target. Every time bfs is called (so in every move method of chase or
+     * scatter modes), the ghost is on the square he's on searching for the direction that he should go in
+     * in order to be closest to the target. All this method does is return a direction.
+     */
     public Direction bfs(BoardCoordinate target, BoardCoordinate root, MazeSquare[][] map, GhostColor ghostColor) {
         LinkedList<BoardCoordinate> Q = new LinkedList();
         Direction[][] directionArray = new Direction[Constants.ROWS][Constants.COLUMNS];
-        BoardCoordinate closestSquare = root; // SET ORIGINAL DISTANCE TO BE REALLY LARGE SO IT GOES INTO THE IF STATEMENT
+        BoardCoordinate closestSquare = root;
         _firstRun = true;
         BoardCoordinate current = root;
         Direction direction = Direction.UP;
@@ -125,6 +154,11 @@ public class Ghost implements Collidable {
         return direction;
     }
 
+    /**
+     * This method checks the right/left/up/down neighbors of the ghost trying to move, and sees if they're
+     * valid spots that could be moved in. If they are, the ghost will place a left/right/up/down direction
+     * in the directionArray that parallels the direction that was searched.
+     */
     public void populateNeighbors(BoardCoordinate current, MazeSquare[][] map,
                           Direction[][] directionArray, LinkedList<BoardCoordinate> Q, GhostColor ghostColor) {
         this.checkNeighbors(0, -1, current, directionArray, map, Q, true,  Direction.LEFT, ghostColor); // LEFT
@@ -133,6 +167,10 @@ public class Ghost implements Collidable {
         this.checkNeighbors(1, 0, current, directionArray, map, Q, true, Direction.DOWN, ghostColor); // DOWN
     }
 
+    /**
+     * This method visits the left/right/up/down neighbors of the ghost and adds the future direction
+     * depending on if it's a valid direction for the ghost to go in.
+     */
     public void visitNeighbors(BoardCoordinate current, MazeSquare[][] map,
                                   Direction[][] directionArray, LinkedList<BoardCoordinate> Q, GhostColor ghostColor) {
         this.checkNeighbors(0, -1, current, directionArray, map, Q, false, Direction.LEFT, ghostColor); // LEFT
@@ -141,6 +179,13 @@ public class Ghost implements Collidable {
         this.checkNeighbors(1, 0, current, directionArray, map, Q, false, Direction.DOWN, ghostColor); // DOWN
     }
 
+    /**
+     * This method is primarily responsible for checking the validity of the ghost's neighbors. It's split
+     * into two halves: if this is the first level of the bfs where the neighbors are first being populated,
+     * and then every other level of bfs when the neighbors of the neighbors are being checked. If it's an
+     * everything else type of situation, depending on what direction the ghost is moving in, that square
+     * will be checked and the direction added to the direction array list.
+     */
     public void checkNeighbors(int i, int j, BoardCoordinate current,
                                Direction[][] directionArray, MazeSquare[][] map,
                                LinkedList<BoardCoordinate> Q, boolean first, Direction direction, GhostColor ghostColor) {
@@ -196,12 +241,18 @@ public class Ghost implements Collidable {
         }
     }
 
+    /**
+     * The distance from the root to the target is calculated here
+     */
     public int distanceToTarget(BoardCoordinate current, BoardCoordinate target) {
         double distance = Math.sqrt(Math.pow((current.getRow()-target.getRow()),2) +
                 Math.pow((current.getColumn()-target.getColumn()),2));
         return (int)distance;
     }
 
+    /**
+     * This method returns the opposite of an input direction
+     */
     public Direction getOpposite(Direction direction) {
         switch(direction) {
             case LEFT:
@@ -222,6 +273,10 @@ public class Ghost implements Collidable {
         return direction;
     }
 
+    /**
+     * This method returns the instance variable direction for each of the ghosts depending on
+     * what color is passed in. I made GhostColor enums to code more generally this way.
+     */
     public Direction getDirection(GhostColor ghostColor) {
         switch(ghostColor) {
             case PINK:
@@ -235,6 +290,10 @@ public class Ghost implements Collidable {
         }
     }
 
+    /**
+     * This method also takes in the specific ghost color enum and sets the direction
+     * for the proper ghost.
+     */
     public void setDirection(GhostColor ghostColor, Direction direction) {
         switch(ghostColor) {
             case RED:

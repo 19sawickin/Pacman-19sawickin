@@ -5,11 +5,27 @@ Final handin
 
 
 DESIGN CHOICES:
+I think I coded pretty generally throughout the project and tried to be as efficient with code as possible.
+In terms of design choices, I put a lot of the logic into the Game class but decided to have bfs in the ghost
+class. Every time move was called on the ghost in the time handler, a lot of information would have to be
+passed in as parameters such as the target squares and the ghost itself, but it ultimately allowed for
+more general coding.
 
+One notable design choice that I made was to use enums to represent ghost colors so that different methods would
+know what ghost to make adjustments to. For example, it allowed me to figure out the direction of a particular
+ghost through a switch statement. If the ghost passed through was a redGhost, I could use a switch statement
+where the redGhost case would return _redGhostDirection.
 
 
 KNOWN BUGS:
+So my frightened mode bugs out after running for a few seconds and ghosts end up running through walls and
+causing the game to freeze, so where I call frightenMode() in the game class, I comment that out and instead
+run it on chase mode. The ghosts still turn blue and go back to the pen when pacman collides with them, but
+they move in bfs directions, not random directions.
 
+Also, sometimes pacman fails to collide with ghosts even though I move pacman, check collisions, move the ghost,
+check collisions. I noticed that this tends to be the case when pacman and the ghost are going around corners,
+but I don't know why that happens.
 
 HOURS SPENT:
 WAY too many

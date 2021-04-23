@@ -1,5 +1,10 @@
 package pacman;
 
+/**
+ * The constants class contains constants that determine size of the objects
+ * as well as locations and how often the timelines update.
+ */
+
 public class Constants {
 
     public static final int SQUARE_WIDTH = 25;
