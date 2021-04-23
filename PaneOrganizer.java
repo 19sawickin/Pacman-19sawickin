@@ -5,10 +5,20 @@ import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.layout.*;
 
+/**
+ * The pane organizer sets up all of the panes and also sets
+ * up the quit button function. The gamePane and bottomPane
+ * are passed into the Game constructor so that the game class
+ * can add various labels and update the score more efficiently.
+ */
 public class PaneOrganizer {
 
     BorderPane _root;
 
+    /**
+     * PaneOrganizer constructor constructs the root, gamePane,
+     * bottomPane, and adds the quit button.
+     */
     public PaneOrganizer() {
         _root = new BorderPane();
         Pane gamePane = new Pane();
@@ -19,6 +29,9 @@ public class PaneOrganizer {
         new Game(gamePane, bottomPane);
     }
 
+    /**
+     * method returns the root
+     */
     public BorderPane getRoot() {
         return _root;
     }

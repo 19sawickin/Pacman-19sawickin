@@ -30,7 +30,7 @@ public class Ghost implements Collidable {
 
     public int collide(Pacman pacman, Pane gamePane, Game game) {
         if(game.getFrightMode()) {
-            game.addToPen(this, gamePane);
+            game.addToPen(this);
             return 200;
         } else {
             game.resetGame();
@@ -71,24 +71,21 @@ public class Ghost implements Collidable {
 
     public void move(Direction direction, Ghost ghost, MazeSquare[][] map, GhostColor ghostColor) {
         map[ghost.getY()/Constants.SQUARE_WIDTH][ghost.getX()/Constants.SQUARE_WIDTH].getArrayList().remove(ghost);
-        //this.checkWrapping(ghost);
         switch(direction) {
             case LEFT:
-                if(ghost.getX()==0) { // 1 22*Constants.SQUARE_WIDTH
+                if(ghost.getX()==0) {
                     ghost.setX(22*Constants.SQUARE_WIDTH);
                 } else {
                     ghost.setX(ghost.getX() - Constants.SQUARE_WIDTH);
                 }
-                //ghost.setX(ghost.getX() - Constants.SQUARE_WIDTH);
                 break;
             case RIGHT:
-                if(ghost.getX()==22*Constants.SQUARE_WIDTH) { //21*Constants.SQUARE_WIDTH
+                if(ghost.getX()==22*Constants.SQUARE_WIDTH) {
                     System.out.println("Right side");
                     ghost.setX(0);
                 } else {
                     ghost.setX(ghost.getX() + Constants.SQUARE_WIDTH);
                 }
-                //ghost.setX(ghost.getX() + Constants.SQUARE_WIDTH);
                 break;
             case UP:
                 ghost.setY(ghost.getY() - Constants.SQUARE_WIDTH);
@@ -110,7 +107,7 @@ public class Ghost implements Collidable {
         _firstRun = true;
         BoardCoordinate current = root;
         Direction direction = Direction.UP;
-        directionArray[root.getRow()][root.getColumn()] = this.getDirection(ghostColor); // this.getDirection(ghostColor)
+        directionArray[root.getRow()][root.getColumn()] = this.getDirection(ghostColor);
         this.populateNeighbors(current, map, directionArray, Q, ghostColor);
         while(!Q.isEmpty()) {
             current = Q.removeFirst();
@@ -156,7 +153,7 @@ public class Ghost implements Collidable {
         if(!first) {
             if (!map[current.getRow()+i][current.getColumn()+j].getIsAWall() &&
                     directionArray[current.getRow()+i][current.getColumn()+j]==null
-                    && this.getOpposite(direction)!=this.getDirection(ghostColor)) { //_direction
+                    && this.getOpposite(direction)!=this.getDirection(ghostColor)) {
 
                 directionArray[current.getRow()+i][current.getColumn()+j] =
                         directionArray[current.getRow()][current.getColumn()];
@@ -166,7 +163,7 @@ public class Ghost implements Collidable {
             }
         } else {
             if(!map[current.getRow()+i][current.getColumn()+j].getIsAWall()
-                    && this.getOpposite(direction)!=this.getDirection(ghostColor)) { //_direction
+                    && this.getOpposite(direction)!=this.getDirection(ghostColor)) {
                 switch(j) {
                     case -1:
                     case 22:
@@ -226,10 +223,7 @@ public class Ghost implements Collidable {
     }
 
     public Direction getDirection(GhostColor ghostColor) {
-        //Direction direction = Direction.UP;
         switch(ghostColor) {
-            case RED:
-                return _redDirection;
             case PINK:
                 return _pinkDirection;
             case BLUE:
